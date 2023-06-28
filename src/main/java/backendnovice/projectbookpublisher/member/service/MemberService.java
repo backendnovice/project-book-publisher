@@ -46,6 +46,7 @@ public interface MemberService {
      */
     default MemberEntity dtoToEntity(MemberDTO memberDTO) {
         MemberEntity member = MemberEntity.builder()
+                .id(memberDTO.getId())
                 .email(memberDTO.getEmail())
                 .password(memberDTO.getPassword())
                 .phone(memberDTO.getPhone()).build();

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/common :: common-head}">
+    <title>로그인</title>
+</head>
+<body>
+<div class="container">
+    <form class="form-login" name="form-login" th:method="post" th:action="@{~/member/login}">
+        <h2>로그인</h2>
+        <div class="mb-3">
+            <input type="email" class="form-control" id="email" name="email" placeholder="이메일">
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">
+        </div>
+        <div class="mb-2">
+            <span class="text-danger" id="error"></span>
+        </div>
+        <div class="mb-2">
+            <button type="button" class="btn-primary" id="btn-login">로그인</button>
+        </div>
+        <div class="mb-2">
+            <button type="button" class="btn-link" th:onclick="|location.href='@{~/member/register}'|">계정이 없습니까?
+            </button>
+            <button type="button" class="btn-link" th:onclick="|location.href='@{~/member/help}'|">비밀번호를 분실했습니까?
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $('#btn-login').click(function () {
+            validate();
+        });
+    });
+
+    function validate() {
+        let email = $('#email').val();
+        let password = $('#password').val();
+
+        if (!email || !password) {
+            $('#error').text('ID와 패스워드를 입력하세요.');
+        } else {
+            $.ajax({
+                type: 'post',
+                url: 'api/v1/login',
+                data: JSON.stringify({
+                    email: email,
+                    password: password
+                }),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.isValid) {
+                        $('.form-login').submit();
+                    } else {
+                        $('#error').text('ID 또는 패스워드가 올바르지 않습니다.');
+                    }
+                },
+                error: function () {
+                    $('#error').text('예기치 못한 오류가 발생했습니다.');
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

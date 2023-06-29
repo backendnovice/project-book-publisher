@@ -1,72 +1,90 @@
+/**
+ * @author : backendnovice@gmail.com
+ * @date : 2023-06-29
+ * @desc : 회원 레포지토리 테스트
+ */
+
 package backendnovice.projectbookpublisher.member.repository;
 
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
-import backendnovice.projectbookpublisher.member.service.MemberService;
+import jakarta.transaction.Transactional;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class MemberRepositoryTest {
     @Autowired
-    MemberRepository memberRepository;
+    private MemberRepository memberRepository;
 
     @Test
-    void testInsert() {
+    @Transactional
+    @DisplayName("Member Create Test")
+    void testMemberInsert() {
         MemberEntity member = MemberEntity.builder()
                 .email("username@email.com")
                 .password("password")
                 .phone("01012345678").build();
 
-        memberRepository.save(member);
+        MemberEntity memberSaved = memberRepository.save(member);
+
+        Assertions.assertThat(member).isSameAs(memberSaved);
+        Assertions.assertThat(memberSaved.getId()).isNotNull();
+        Assertions.assertThat(member.getEmail()).isEqualTo(memberSaved.getEmail());
+        Assertions.assertThat(member.getPassword()).isEqualTo(memberSaved.getPassword());
     }
 
     @Test
-    void testSelect() {
-        Long id = 1L;
+    @DisplayName("Member Read Test")
+    void testMemberSelect() {
+        Long id = 3L;
 
-        MemberEntity actual = MemberEntity.builder()
-                .id(1L)
+        MemberEntity member = MemberEntity.builder()
                 .email("username@email.com")
                 .password("password")
                 .phone("01012345678").build();
 
-        Optional<MemberEntity> expect = memberRepository.findById(id);
+        MemberEntity memberFound = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Member ID : " + id));
 
-        assertEquals(expect.get().getId(), actual.getId());
-        assertEquals(expect.get().getEmail(), actual.getEmail());
-        assertEquals(expect.get().getPassword(), actual.getPassword());
-        assertEquals(expect.get().getPhone(), actual.getPhone());
+        Assertions.assertThat(memberFound.getId()).isNotNull();
+        Assertions.assertThat(memberFound.getEmail()).isEqualTo(member.getEmail());
+        Assertions.assertThat(memberFound.getPassword()).isEqualTo(member.getPassword());
+        Assertions.assertThat(memberFound.getPhone()).isEqualTo(member.getPhone());
     }
 
     @Test
-    void testUpdate() {
-        MemberEntity member = MemberEntity.builder()
-                .id(1L)
-                .email("username@email.com")
-                .password("new_password")
-                .phone("01012345678").build();
+    @Transactional
+    @DisplayName("Member Update Test")
+    void testMemberUpdate() {
+        Long id = 3L;
 
-        MemberEntity actual = MemberEntity.builder()
-                .email("username@email.com")
-                .password("new_password")
-                .phone("01012345678").build();
+        MemberEntity member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Member ID : " + id));
 
-        MemberEntity expect = memberRepository.save(member);
+        member.setEmail("updated@email.com");
+        member.setPassword("updated_password");
+        member.setPhone("updated_phone");
 
-        assertEquals(expect.getPassword(), actual.getPassword());
+        MemberEntity memberUpdated = memberRepository.save(member);
+
+        Assertions.assertThat(memberUpdated.getId()).isNotNull();
+        Assertions.assertThat(memberUpdated.getEmail()).isEqualTo(member.getEmail());
+        Assertions.assertThat(memberUpdated.getPassword()).isEqualTo(member.getPassword());
+        Assertions.assertThat(memberUpdated.getPhone()).isEqualTo(member.getPhone());
     }
 
     @Test
-    void testDelete() {
+    @Transactional
+    @DisplayName("Member Delete Test")
+    void testMemberDelete() {
         memberRepository.deleteById(1L);
 
-        Optional<MemberEntity> expect = memberRepository.findById(1L);
+        Optional<MemberEntity> memberDeleted = memberRepository.findById(1L);
 
-        assertEquals(expect, Optional.empty());
+        Assertions.assertThat(memberDeleted).isEqualTo(Optional.empty());
     }
 }

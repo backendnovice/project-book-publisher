@@ -1,12 +1,12 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-28
+ * @date : 2023-06-29
  * @desc : 회원 관련 메소드를 정의하는 인터페이스.
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
-import backendnovice.projectbookpublisher.member.domain.MemberDTO;
+import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 
 public interface MemberService {
@@ -17,7 +17,7 @@ public interface MemberService {
      * @return
      *      리다이렉션할 URI
      */
-    String doRegister(MemberDTO memberDTO);
+    boolean doRegister(MemberDTO memberDTO);
 
     /**
      * 이메일과 비밀번호를 검증하는 메소드.
@@ -46,7 +46,6 @@ public interface MemberService {
      */
     default MemberEntity dtoToEntity(MemberDTO memberDTO) {
         MemberEntity member = MemberEntity.builder()
-                .id(memberDTO.getId())
                 .email(memberDTO.getEmail())
                 .password(memberDTO.getPassword())
                 .phone(memberDTO.getPhone()).build();

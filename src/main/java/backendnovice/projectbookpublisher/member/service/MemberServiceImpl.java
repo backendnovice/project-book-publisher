@@ -1,12 +1,12 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-28
+ * @date : 2023-06-29
  * @desc : 회원 관련 메소드를 구현하는 클래스.
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
-import backendnovice.projectbookpublisher.member.domain.MemberDTO;
+import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -24,17 +24,17 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String doRegister(MemberDTO memberDTO) {
+    public boolean doRegister(MemberDTO memberDTO) {
         String password = memberDTO.getPassword();
 
         // 패스워드가 조건과 일치할 경우, 삽입하고 로그인 페이지 리다이렉션.
         if (checkPasswordPattern(password)) {
             memberRepository.save(dtoToEntity(memberDTO));
-            return "redirect:/member/login";
+            return true;
         }
 
         // 실패할 경우 회원가입 페이지 리다이렉션.
-        return "redirect:/member/register";
+        return false;
     }
 
     @Override

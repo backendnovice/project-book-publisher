@@ -1,10 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-28
+ * @date : 2023-06-29
  * @desc : 회원 데이터 전송 객체.
  */
 
-package backendnovice.projectbookpublisher.member.domain;
+package backendnovice.projectbookpublisher.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

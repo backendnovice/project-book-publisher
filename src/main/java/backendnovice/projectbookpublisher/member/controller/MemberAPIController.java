@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/vi/member")
+@RequestMapping("/api/v1/member")
 @Tag(name = "회원 API", description = "회원 관련 데이터를 제공하는 API.")
 public class MemberAPIController {
     private final MemberService memberService;

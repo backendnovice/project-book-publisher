@@ -30,7 +30,11 @@ dependencies {
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	// Mockito Core
 	testImplementation("org.mockito:mockito-core:5.4.0")
+	// Springdoc OpenAPI UI
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+	// implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
 }
 
 tasks.withType<Test> {

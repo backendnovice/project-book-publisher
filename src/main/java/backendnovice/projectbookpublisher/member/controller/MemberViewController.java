@@ -1,7 +1,11 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-29
+ * @date : 2023-06-30
  * @desc : 회원 관련 POST, GET 요청을 처리하는 클래스.
+ *
+ * 변경 내역 :
+ * 2023-06-29 - backendnovice@gmail.com - MemberController.java 로부터 분할
+ * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  */
 
 package backendnovice.projectbookpublisher.member.controller;

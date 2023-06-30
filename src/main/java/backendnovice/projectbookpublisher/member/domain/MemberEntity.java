@@ -1,7 +1,11 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-29
+ * @date : 2023-06-30
  * @desc : DB의 회원 테이블에 대응하는 객체.
+ *
+ * 변경 내역 :
+ * 2023-06-29 - backendnovice@gmail.com - id 무결성 위해 코드 수정
+ * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  */
 
 package backendnovice.projectbookpublisher.member.domain;

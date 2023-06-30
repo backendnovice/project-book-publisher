@@ -1,7 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-28
+ * @date : 2023-06-30
  * @desc : DB에 회원 데이터를 입출력하는 인터페이스.
+ *
+ * 변경 내역 :
+ * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  */
 
 package backendnovice.projectbookpublisher.member.repository;

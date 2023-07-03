@@ -13,6 +13,7 @@ package backendnovice.projectbookpublisher.member.service;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -22,22 +23,25 @@ import java.util.regex.Pattern;
 @Service
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberServiceImpl(MemberRepository memberRepository) {
+    public MemberServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public boolean doRegister(MemberDTO memberDTO) {
         String password = memberDTO.getPassword();
 
-        // 패스워드가 조건과 일치할 경우, 삽입하고 로그인 페이지 리다이렉션.
+        // 패스워드가 같고 패턴과 일치할 경우.
         if (checkPasswordPattern(password)) {
+            memberDTO.setPassword(passwordEncoder.encode(password));
             memberRepository.save(dtoToEntity(memberDTO));
             return true;
         }
 
-        // 실패할 경우 회원가입 페이지 리다이렉션.
+        // 패스워드가 다르거나 패턴과 일치하지 않을 경우.
         return false;
     }
 
@@ -46,17 +50,14 @@ public class MemberServiceImpl implements MemberService {
         Optional<MemberEntity> member = memberRepository.findByEmail(memberDTO.getEmail());
 
         // 이메일과 일치하는 데이터가 존재할경우, 패스워드를 비교하여 반환한다.
-        if (member.isPresent())
-            return member.get().getPassword().equals(memberDTO.getPassword());
-
-        return false;
+        return member.filter(memberEntity -> passwordEncoder
+                .matches(memberDTO.getPassword(), memberEntity.getPassword()))
+                .isPresent();
     }
 
     @Override
     public boolean validateRegister(MemberDTO memberDTO) {
-        boolean isExists = memberRepository.existsByEmail(memberDTO.getEmail());
-
-        return isExists;
+        return memberRepository.existsByEmail(memberDTO.getEmail());
     }
 
     /**
@@ -69,7 +70,6 @@ public class MemberServiceImpl implements MemberService {
     private boolean checkPasswordPattern(String password) {
         // 최소 한개의 대소문자 + 최소 한개의 숫자 + 최소 8자.
         Pattern pattern = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
-
         Matcher matcher = pattern.matcher(password);
 
         return matcher.find();

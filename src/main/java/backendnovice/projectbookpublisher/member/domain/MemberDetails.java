@@ -6,9 +6,8 @@
  * 변경 내역 :
  */
 
-package backendnovice.projectbookpublisher.security.domain;
+package backendnovice.projectbookpublisher.member.domain;
 
-import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,11 +16,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails implements UserDetails {
-    private MemberEntity member;
+public class MemberDetails implements UserDetails {
+    private final String PREFIX = "ROLE_";
+    private String email;
+    private String password;
+    private String role;
 
-    public CustomUserDetails(MemberEntity member) {
-        this.member = member;
+    public MemberDetails(MemberEntity member) {
+        this.email = member.getEmail();
+        this.password = member.getPassword();
+        this.role = member.getRoles().getName();
     }
 
     /**
@@ -33,7 +37,7 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
-        authorities.add(new SimpleGrantedAuthority(member.getRoles().get()));
+        authorities.add(new SimpleGrantedAuthority(PREFIX + role));
 
         return authorities;
     }
@@ -45,7 +49,7 @@ public class CustomUserDetails implements UserDetails {
      */
     @Override
     public String getUsername() {
-        return member.getEmail();
+        return email;
     }
 
     /**
@@ -55,7 +59,7 @@ public class CustomUserDetails implements UserDetails {
      */
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return password;
     }
 
     /**

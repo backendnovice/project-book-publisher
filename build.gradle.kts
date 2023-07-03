@@ -34,7 +34,8 @@ dependencies {
 	testImplementation("org.mockito:mockito-core:5.4.0")
 	// Springdoc OpenAPI UI
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
-	// implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
+	// Spring Boot Starter Security
+	implementation("org.springframework.boot:spring-boot-starter-security:3.1.1")
 }
 
 tasks.withType<Test> {

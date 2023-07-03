@@ -6,6 +6,7 @@
  * 변경 내역 :
  * 2023-06-29 - backendnovice@gmail.com - id 무결성 위해 코드 수정
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
+ * 2023-07-04 - backendnovice@gmail.com - Role USER로 임시로 고정
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -33,6 +34,10 @@ public class MemberEntity extends TimeEntity {
 
     @Column(name = "member_tel")
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_role")
+    private MemberRole roles = MemberRole.USER;
 
     @Builder
     public MemberEntity(String email, String password, String phone) {

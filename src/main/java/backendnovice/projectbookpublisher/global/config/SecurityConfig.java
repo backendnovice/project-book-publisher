@@ -6,38 +6,34 @@
  * 변경 내역 :
  */
 
-package backendnovice.projectbookpublisher.security.config;
+package backendnovice.projectbookpublisher.global.config;
 
 import backendnovice.projectbookpublisher.member.domain.MemberRole;
-import backendnovice.projectbookpublisher.security.service.CustomDetailsService;
+import backendnovice.projectbookpublisher.member.service.MemberDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final CustomDetailsService customDetailsService;
+    private final MemberDetailsService memberDetailsService;
 
-    public SecurityConfig(CustomDetailsService customDetailsService) {
-        this.customDetailsService = customDetailsService;
+    public SecurityConfig(MemberDetailsService memberDetailsService) {
+        this.memberDetailsService = memberDetailsService;
     }
 
     private static final String[] LINK_USER = {
-            "member/profiles"
+            "/member/profiles", "/member/failure"
     };
 
     private static final String[] LINK_PUBLIC = {
-            "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register"
+            "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure"
     };
 
     private static final String[] LINK_RESOURCE = {
@@ -50,7 +46,7 @@ public class SecurityConfig {
      *      암호화 기능을 제공하는 객체
      */
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -62,30 +58,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(LINK_USER).hasRole(MemberRole.USER.get())
+                // 롤 매핑 설정.
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(LINK_USER).hasRole(MemberRole.USER.getName())
                         .requestMatchers(LINK_PUBLIC).anonymous()
                         .requestMatchers(LINK_RESOURCE).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(login -> login
+                // 로그인 설정.
+                .formLogin((login) -> login
                         .loginPage("/member/login")
-                        .successHandler(((request, response, authentication) -> {
-                            response.sendRedirect("/member/profiles");
-                        }))
-                        .failureUrl("/member/loginFailure")
+                        .successHandler((request, response, authentication) -> {
+                            response.sendRedirect("/member/profile");
+                        })
+                        .failureUrl("/member/failure")
                         .permitAll()
                 )
-                .logout(logout -> logout
+                // 로그아웃 설정.
+                .logout((logout) -> logout
                         .logoutUrl("/member/logout")
                         .logoutSuccessUrl("/member/login")
                         .permitAll()
                 );
 
+        // 기본 폼, CSRF, CORS 비활성화.
         httpSecurity
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable);
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable());
 
         return httpSecurity.build();
     }
@@ -99,15 +99,9 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(customDetailsService);
+        authenticationProvider.setUserDetailsService(memberDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return authenticationProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -6,23 +6,21 @@
  * 변경 내역 :
  */
 
-package backendnovice.projectbookpublisher.security.service;
+package backendnovice.projectbookpublisher.member.service;
 
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
-import backendnovice.projectbookpublisher.security.domain.CustomUserDetails;
+import backendnovice.projectbookpublisher.member.domain.MemberDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomDetailsService implements UserDetailsService {
+public class MemberDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
 
-    public CustomDetailsService(MemberRepository memberRepository) {
+    public MemberDetailsService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -40,6 +38,6 @@ public class CustomDetailsService implements UserDetailsService {
         MemberEntity member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid Member Email: " + email));
 
-        return new CustomUserDetails(member);
+        return new MemberDetails(member);
     }
 }

@@ -16,6 +16,7 @@ import backendnovice.projectbookpublisher.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,7 @@ public class MemberAPIController {
      *      응답 데이터
      */
     @PostMapping("/login")
-    @Operation(summary = "로그인 지원 메소드", description = "이메일과 비밀번호가 DB와 일치하는지 검사하고 결과를 반환한다.")
+    @Operation(summary = "로그인 지원 메소드", description = "이메일, 비밀번호 일치여부를 검사하고 결과를 반환한다.")
     public ResponseEntity<Map<String, Boolean>> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
         Map<String, Boolean> response = new HashMap<>();
 

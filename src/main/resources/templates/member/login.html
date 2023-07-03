@@ -5,10 +5,10 @@
 </head>
 <body>
 <div class="container">
-    <form class="form-login" name="form-login" th:method="post" th:action="@{~/member/login}">
+    <form class="form-login" th:method="post" th:action="@{~/member/login}">
         <h2>로그인</h2>
         <div class="mb-3">
-            <input type="email" class="form-control" id="email" name="email" placeholder="이메일">
+            <input type="email" class="form-control" id="email" name="username" placeholder="이메일">
         </div>
         <div class="mb-3">
             <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">

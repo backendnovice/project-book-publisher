@@ -13,6 +13,7 @@ package backendnovice.projectbookpublisher.member.service;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,12 @@ public class MemberServiceImpl implements MemberService {
 
         // 패스워드가 다르거나 패턴과 일치하지 않을 경우.
         return false;
+    }
+
+    @Override
+    @Transactional
+    public boolean doWithdraw(String email) {
+        return memberRepository.deleteByEmail(email) > 0;
     }
 
     @Override

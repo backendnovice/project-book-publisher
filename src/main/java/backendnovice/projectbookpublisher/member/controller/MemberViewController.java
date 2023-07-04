@@ -13,10 +13,16 @@ package backendnovice.projectbookpublisher.member.controller;
 
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/member")
@@ -30,7 +36,7 @@ public class MemberViewController {
     /**
      * 로그인 페이지를 매핑하는 메소드.
      * @return
-     *      반환할 URI.
+     *      반환할 URI
      */
     @GetMapping("/login")
     public String getLoginPage() {
@@ -40,7 +46,7 @@ public class MemberViewController {
     /**
      * 회원가입 페이지를 매핑하는 메소드.
      * @return
-     *      반환할 URI.
+     *      반환할 URI
      */
     @GetMapping("/register")
     public String getRegisterPage() {
@@ -50,7 +56,7 @@ public class MemberViewController {
     /**
      * 프로필 페이지를 매핑하는 메소드.
      * @return
-     *      반환할 URI.
+     *      반환할 URI
      */
     @GetMapping("/profiles")
     public String getProfilesPage() {
@@ -60,7 +66,7 @@ public class MemberViewController {
     /**
      * 에러 페이지를 매핑하는 메소드. (임시)
      * @return
-     *      반환할 URI.
+     *      반환할 URI
      */
     @GetMapping("/failure")
     public String getFailurePage() {
@@ -78,5 +84,25 @@ public class MemberViewController {
     public String registerProcess(MemberDTO memberDTO) {
         return (memberService.doRegister(memberDTO))
                 ? "redirect:/member/login" : "redirect:/member/register";
+    }
+
+    /**
+     * 회원탈퇴 서비스를 요청하는 메소드.
+     * @param principal
+     *      회원 정보 객체
+     * @return
+     *      반환할 URI
+     */
+    @PostMapping("/withdraw")
+    public String withdrawProcess(Principal principal, RedirectAttributes redirectAttributes) {
+        String email = principal.getName();
+
+        if(memberService.doWithdraw(email)) {
+            redirectAttributes.addFlashAttribute("msg", "회원정보 탈퇴를 성공했습니다.");
+            return "redirect:/member/logout";
+        }else {
+            redirectAttributes.addFlashAttribute("msg", "회원정보 탈퇴를 실패했습니다.");
+            return "redirect:/member/profiles";
+        }
     }
 }

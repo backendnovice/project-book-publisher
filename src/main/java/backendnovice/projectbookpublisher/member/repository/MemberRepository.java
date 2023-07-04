@@ -36,4 +36,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
      *      이메일 존재 여부.
      */
     boolean existsByEmail(@Param("member_email") String email);
+
+    Long deleteByEmail(@Param("member_email") String email);
 }

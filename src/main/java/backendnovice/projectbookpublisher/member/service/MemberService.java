@@ -15,13 +15,22 @@ import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 
 public interface MemberService {
     /**
-     * 회원 가입을 처리하고 리다이렉션 URI를 반환하는 메소드.
+     * 회원 가입을 처리하고 처리 여부를 반환하는 메소드.
      * @param memberDTO
      *      회원 데이터 전송 객체
      * @return
-     *      리다이렉션할 URI
+     *      처리 여부
      */
     boolean doRegister(MemberDTO memberDTO);
+
+    /**
+     * 회원 탈퇴를 처리하고 처리 여부를 반환하는 메소드.
+     * @param email
+     *      회원 이메일
+     * @return
+     *      처리 여부
+     */
+    boolean doWithdraw(String email);
 
     /**
      * 이메일과 비밀번호를 검증하는 메소드.

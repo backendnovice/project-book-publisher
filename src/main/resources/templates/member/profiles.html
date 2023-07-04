@@ -1,10 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{layout/common :: common-head}">
     <title>프로필</title>
 </head>
 <body>
-  회원 프로필 페이지.
+<div class="container">
+    <h1 sec:authentication="principal.getUsername()"></h1>
+    <div class="mb-3" sec:authorize="isAuthenticated()">
+        <a sec:authorize="hasRole('ROLE_USER')" id="btn-logout" onclick="logout()">로그아웃</a>
+        <a sec:authorize="hasRole('ROLE_USER')" id="btn-withdraw" onclick="withdraw()">회원탈퇴</a>
+        <form id="form-withdraw" th:method="post" th:action="@{~/member/withdraw}">
+            <button type="submit" class="btn-primary" onclick="withdraw()">회원탈퇴</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#btn-withdraw').click(function () {
+            withdraw();
+        })
+
+        $('#btn-logout').click(function () {
+            logout();
+        })
+    });
+
+    function logout() {
+        let answer = confirm('정말로 로그아웃 하겠습니까?');
+
+        if(answer) {
+            location.replace("/member/logout");
+        }
+    }
+    function withdraw() {
+        let answer = confirm('정말로 회원탈퇴 하겠습니까?');
+
+        if(answer) {
+            location.replace("/member/withdraw");
+        }
+    }
+</script>
 </body>
 </html>

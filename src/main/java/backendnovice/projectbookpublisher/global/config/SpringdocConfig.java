@@ -1,9 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-30
+ * @date : 2023-07-04
  * @desc : Springdoc 설정 클래스
  *
  * 변경 내역 :
+ * 2023-07-04 - backendnovice@gmail.com - title 수정
  */
 
 package backendnovice.projectbookpublisher.global.config;
@@ -22,7 +23,7 @@ public class SpringdocConfig {
     @Bean
     public OpenAPI openAPI(@Value("${springdoc.version}") String version) {
         Info info = new Info()
-                .title("Book Publisher Open API")
+                .title("Project-Book-Publisher OpenAPI")
                 .description("About API Documentation.")
                 .version(version);
 

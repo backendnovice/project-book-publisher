@@ -26,7 +26,7 @@ public class MemberDetailsService implements UserDetailsService {
 
     /**
      * 회원 이메일을 기반으로 회원을 탐색하는 메소드.
-     * @param email 
+     * @param email
      *      회원 이메일
      * @return
      *      회원 데이터

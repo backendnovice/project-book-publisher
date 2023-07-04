@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-28
+ * @date : 2023-06-30
  * @desc : 생성일자, 수정일자를 자동으로 주입하는 클래스.
  *
  * 변경 내역 :

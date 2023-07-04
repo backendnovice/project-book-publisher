@@ -1,11 +1,12 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-30
+ * @date : 2023-07-04
  * @desc : DB에 회원 데이터를 입출력하는 인터페이스.
  *
  * 변경 내역 :
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
- */
+ * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 쿼리 추가
+ **/
 
 package backendnovice.projectbookpublisher.member.repository;
 
@@ -37,5 +38,12 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
      */
     boolean existsByEmail(@Param("member_email") String email);
 
+    /**
+     * 파리미터 이메일과 일치하는 컬럼을 제거하는 메소드.
+     * @param email
+     *      회원 이메일
+     * @return
+     *      삭제한 컬럼 개수
+     */
     Long deleteByEmail(@Param("member_email") String email);
 }

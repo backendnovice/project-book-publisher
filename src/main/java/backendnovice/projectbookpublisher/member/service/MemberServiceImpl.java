@@ -1,11 +1,12 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-30
+ * @date : 2023-07-04
  * @desc : 회원 관련 메소드를 구현하는 클래스.
  *
  * 변경 내역 :
  * 2023-06-29 - backendnovice@gmail.com - doRegister() 리턴 타입 수정
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
+ * 2023-07-04 - backendnovice@gmail.com - 회원가입 탈퇴 메소드 추가
  */
 
 package backendnovice.projectbookpublisher.member.service;
@@ -49,6 +50,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public boolean doWithdraw(String email) {
+        // 제거된 컬럼 개수가 0보다 클 경우 true 값 반환한다.
         return memberRepository.deleteByEmail(email) > 0;
     }
 
@@ -58,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 이메일과 일치하는 데이터가 존재할경우, 패스워드를 비교하여 반환한다.
         return member.filter(memberEntity -> passwordEncoder
-                .matches(memberDTO.getPassword(), memberEntity.getPassword()))
+                        .matches(memberDTO.getPassword(), memberEntity.getPassword()))
                 .isPresent();
     }
 

@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <h1 sec:authentication="principal.getUsername()"></h1>
+    <span sec:authentication="name"></span>
     <div class="mb-3" sec:authorize="isAuthenticated()">
         <a sec:authorize="hasRole('ROLE_USER')" id="btn-logout" onclick="logout()">로그아웃</a>
         <a sec:authorize="hasRole('ROLE_USER')" id="btn-withdraw" onclick="withdraw()">회원탈퇴</a>

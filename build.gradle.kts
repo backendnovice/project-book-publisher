@@ -36,8 +36,8 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 	// Spring Boot Starter Security
 	implementation("org.springframework.boot:spring-boot-starter-security:3.1.1")
-	// Thymeleaf Extras Spring Security 5
-	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.1.1.RELEASE")
+	// Thymeleaf Extras Spring Security 6
+	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE")
 }
 
 tasks.withType<Test> {

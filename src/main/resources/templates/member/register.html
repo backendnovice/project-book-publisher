@@ -5,7 +5,7 @@
 </head>
 <body>
 <div class="container">
-    <form th:method="post" class="form-register" th:action="@{~/member/register}">
+    <form th:method="post" class="form-register" id="form-register" th:action="@{~/member/register}">
         <h2>회원가입</h2>
         <div class="mb-3">
             <input type="email" class="form-control" id="email" name="email" placeholder="이메일">
@@ -19,81 +19,123 @@
             <span class="text-danger" id="error-password"></span>
         </div>
         <div class="mb-3">
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="010-1234-5678">
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="-를 빼고 입력하세요.">
             <span class="text-danger" id="error-phone"></span>
         </div>
         <div class="mb-3">
-            <button type="button" class="btn-primary" id="btn-register">회원가입</button>
+            <button type="button" class="btn btn-primary" id="btn-register">회원가입</button>
         </div>
     </form>
 </div>
 
 <script>
-    $(function () {
-        $('#btn-register').click(function () {
-            validate();
-        });
+    let buttonRegister = document.getElementById("btn-register");
+    let errorPassword = document.getElementById("error-password");
+    let errorPhone = document.getElementById("error-phone");
+    let errorEmail = document.getElementById("error-email");
+
+    buttonRegister.addEventListener("click", () => {
+        checkAll();
     });
 
-    const regexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    function checkAll() {
+        let emailValue = document.getElementById("email").value;
+        let passwordValue = document.getElementById("password").value;
+        let passwordCheckValue = document.getElementById("password-check").value;
+        let phoneValue = document.getElementById("phone").value;
+        let isValid = true;
 
-    function validate() {
-        let email = $('#email').val();
-        let password = $('#password').val();
-        let passwordCheck = $('#password-check').val();
-        let phone = $('#phone').val();
-        let hasError = false;
+        if(!checkEmail(emailValue)) {
+            isValid = false;
+        }
 
-        if (!email) {
-            $('#error-email').text('이메일을 입력하세요.').css('visibility', 'visible');
-            hasError = true;
-        } else {
-            $.ajax({
-                type: 'post',
-                url: '/api/v1/member/register',
-                data: JSON.stringify({
-                    email: email
-                }),
-                contentType: 'application/json',
-                dataType: 'json',
-                success: function (response) {
-                    if (response.isExists) {
-                        hasError = true;
-                        $('#error-email').text('이미 가입된 회원입니다. 다시 한번 확인하세요.').css('visibility', 'visible');
-                    } else {
-                        $('#error-email').css('visibility', 'hidden');
-                    }
+        if(!checkPassword(passwordValue, passwordCheckValue)) {
+            isValid = false;
+        }
+
+        if(!checkPhone(phoneValue)) {
+            isValid = false;
+        }
+
+        if(isValid) {
+            let form = document.getElementById("form-register");
+            form.submit();
+        }
+    }
+
+    function checkEmail(emailValue) {
+        if(emailValue.length === 0) {
+            errorEmail.innerText = "이메일을 입력하세요.";
+            return false;
+        }
+
+        errorEmail.innerText = "";
+        return checkByServer(emailValue);
+    }
+
+    function checkPassword(passwordValue, passwordCheckValue) {
+        const regexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+        if(passwordValue.length === 0 || passwordCheckValue.length === 0) {
+            errorPassword.innerText = "비밀번호와 비밀번호 확인을 입력하세요.";
+            return false;
+        }
+
+        if(!regexp.test(passwordValue)) {
+            errorPassword.innerText = "비밀번호는 8자 이상이고, 하나의 소문자, 대문자, 특수문자를 포함해야 합니다.";
+            return false;
+        }
+
+        errorPassword.innerText = "";
+        return true;
+    }
+
+    function checkPhone(phoneValue) {
+        const regexp = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;
+
+        if(phoneValue.length === 0) {
+            errorPhone.innerText = "전화번호를 입력하세요.";
+            return false;
+        }
+
+        if(!regexp.test(phoneValue)) {
+            errorPhone.innerText = "전화번호는 숫자만을 입력해야합니다.";
+            return false;
+        }
+
+        errorPhone.innerText = "";
+        return true;
+    }
+
+    async function checkByServer(emailValue) {
+        let data = {
+            email: emailValue
+        };
+
+        try {
+            const response = await fetch("/api/v1/member/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                error: function () {
-                    $('#error').text('예기치 못한 오류가 발생했습니다.').css('visibility', 'visible');
-                }
+                body: JSON.stringify(data)
             });
-        }
 
-        if (!password || !passwordCheck) {
-            $('#error-password').text('비밀번호를 입력하세요.').css('visibility', 'visible');
-            hasError = true;
-        } else {
-            if (!regexp.test(password)) {
-                $('#error-password').text('비밀번호는 8자 이상이고, 하나의 소문자, 대문자, 특수문자를 포함해야 합니다.').css("visibility", true);
-                hasError = true;
-            } else if (password !== passwordCheck) {
-                $('#error-password').text('비밀번호가 일치하지 않습니다.').css('visibility', 'visible');
-                hasError = true;
-            } else {
-                $('#error-password').css('visibility', 'hidden');
+            if(response.ok) {
+                const responseData = await response.json();
+                if(!responseData.isExists) {
+                    errorEmail.innerText = "";
+                    return true;
+                }else {
+                    errorEmail.innerText = "아이디 또는 비밀번호가 틀립니다.";
+                    return false;
+                }
+            }else {
+                throw new Error("예기치 못한 오류가 발생했습니다.");
             }
-        }
-
-        if (!phone) {
-            $('#error-phone').text('전화번호를 입력하세요.').css('visibility', 'visible');
-            hasError = true;
-        } else {
-            $('#error-phone').css('visibility', 'hidden');
-        }
-
-        if (!hasError) {
-            $('.form-register').submit();
+        }catch(error) {
+            errorEmail.innerText = error.message;
+            return false;
         }
     }
 </script>

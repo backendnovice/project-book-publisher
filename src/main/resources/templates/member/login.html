@@ -5,7 +5,7 @@
 </head>
 <body>
 <div class="container">
-    <form class="form-login" th:method="post" th:action="@{~/member/login}">
+    <form class="form-login" id="form-login" th:method="post" th:action="@{~/member/login}">
         <h2>로그인</h2>
         <div class="mb-3">
             <input type="email" class="form-control" id="email" name="username" placeholder="이메일">
@@ -20,49 +20,79 @@
             <button type="button" class="btn-primary" id="btn-login">로그인</button>
         </div>
         <div class="mb-2">
-            <button type="button" class="btn-link" th:onclick="|location.href='@{~/member/register}'|">계정이 없습니까?
-            </button>
-            <button type="button" class="btn-link" th:onclick="|location.href='@{~/member/help}'|">비밀번호를 분실했습니까?
-            </button>
+            <button type="button" class="btn btn-link" id="btn-register">계정이 없습니까?</button>
+            <button type="button" class="btn btn-link" id="btn-help">계정을 분실했습니까?</button>
         </div>
     </form>
 </div>
 
 <script>
-    $(function () {
-        $('#btn-login').click(function () {
-            validate();
-        });
+    let buttonLogin = document.getElementById("btn-login");
+    let buttonRegister = document.getElementById("btn-register");
+    let buttonHelp = document.getElementById("btn-help");
+    let error = document.getElementById("error");
+
+    buttonLogin.addEventListener("click", () => {
+        let emailValue = document.getElementById("email").value;
+        let passwordValue = document.getElementById("password").value;
+
+        checkAll(emailValue, passwordValue);
     });
 
-    function validate() {
-        let email = $('#email').val();
-        let password = $('#password').val();
+    buttonRegister.addEventListener("click", () => {
+        location.href="/member/register";
+    });
 
-        if (!email || !password) {
-            $('#error').text('ID와 패스워드를 입력하세요.');
-        } else {
-            $.ajax({
-                type: 'post',
-                url: '/api/v1/member/login',
-                data: JSON.stringify({
-                    email: email,
-                    password: password
-                }),
-                contentType: 'application/json',
-                dataType: 'json',
-                success: function (response) {
-                    if (response.isValid) {
-                        $('.form-login').submit();
-                    } else {
-                        $('#error').text('ID 또는 패스워드가 올바르지 않습니다.');
-                    }
-                },
-                error: function () {
-                    $('#error').text('예기치 못한 오류가 발생했습니다.');
-                }
-            });
+    buttonHelp.addEventListener("click", () => {
+        location.href="/member/help";
+    });
+
+    function checkAll(emailValue, passwordValue) {
+        if(!checkUndefined(emailValue, passwordValue)) {
+            error.innerText = "ID와 비밀번호를 입력하세요.";
+            return false;
         }
+
+        checkByServer(emailValue, passwordValue);
+    }
+
+    function checkUndefined(emailValue, passwordValue) {
+        return !(emailValue.length === 0) || !(passwordValue.length === 0);
+    }
+
+    function checkByServer(emailValue, passwordValue) {
+        let data = {
+            email: emailValue,
+            password: passwordValue
+        };
+
+        fetch("/api/v1/member/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if(response.ok) {
+                    return response.json();
+                }else {
+                    throw new Error("예기치 못한 오류가 발생했습니다.");
+                }
+            })
+            .then(responseData => {
+                if(responseData.isValid === true) {
+                    let form = document.getElementById("form-login");
+                    form.submit();
+                }else {
+                    error.innerText = "ID 또는 비밀번호가 틀립니다.";
+                    return false;
+                }
+            })
+            .catch(error => {
+                error.innerText = error.message;
+                return false;
+            });
     }
 </script>
 </body>

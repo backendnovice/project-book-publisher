@@ -1,10 +1,11 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-04
+ * @date : 2023-07-05
  * @desc : 스프링 시큐리티를 설정하는 클래스.
  *
  * 변경 내역 :
  * 2023-07-04 - backendnovice@gmail.com - 로그아웃 및 회원탈퇴 권한 매핑
+ * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 권한 매핑
  */
 
 package backendnovice.projectbookpublisher.global.config;
@@ -30,7 +31,8 @@ public class SecurityConfig {
     }
 
     private static final String[] LINK_USER = {
-            "/member/profiles", "/member/failure", "/member/logout", "/member/withdraw"
+            "/member/profiles", "/member/failure", "/member/logout", "/member/withdraw",
+            "/member/support/change-password"
     };
     private static final String[] LINK_PUBLIC = {
             "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure"

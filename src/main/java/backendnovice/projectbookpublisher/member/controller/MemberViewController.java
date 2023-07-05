@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-04
+ * @date : 2023-07-05
  * @desc : 회원 관련 POST, GET 요청을 처리하는 클래스.
  *
  * 변경 내역 :
@@ -8,6 +8,7 @@
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - 에러페이지, 프로필 페이지 매핑
  * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 요청 메소드 추가
+ * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 추가
  */
 
 package backendnovice.projectbookpublisher.member.controller;
@@ -72,6 +73,17 @@ public class MemberViewController {
     }
 
     /**
+     * 비밀번호 변경 페이지를 매핑하는 메소드.
+     * @return
+     *      반환할 URI
+     */
+    @GetMapping("/support/change-password")
+    public String getChangePasswordPage() {
+        return "member/support/change-password";
+    }
+
+
+    /**
      * 회원가입 서비스를 요청하는 메소드.
      * @param memberDTO
      *      회원 데이터 전송 객체
@@ -102,5 +114,24 @@ public class MemberViewController {
             redirectAttributes.addFlashAttribute("msg", "회원정보 탈퇴를 실패했습니다.");
             return "redirect:/member/profiles";
         }
+    }
+
+    /**
+     * 비밀번호 변경 서비스를 요청하는 메소드.
+     * @param principal
+     *      회원 정보 객체
+     * @param memberDTO
+     *      회원 데이터 전송 객체
+     * @return
+     *      반환할 URI
+     */
+    @PostMapping("/support/change-password")
+    public String changePasswordProcess(Principal principal, MemberDTO memberDTO) {
+        String email = principal.getName();
+        String password = memberDTO.getPassword();
+
+        memberService.doChangePassword(email, password);
+
+        return "redirect:/member/logout";
     }
 }

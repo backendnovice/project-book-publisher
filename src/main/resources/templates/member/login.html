@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/common :: common-head}">
-    <title>로그인</title>
+    <title>Login</title>
 </head>
 <body>
 <!-- Navbar -->
@@ -9,26 +9,39 @@
 </div>
 
 <!-- Main -->
-<div class="container" id="main">
-    <form class="form-login" id="form-login" th:method="post" th:action="@{~/member/login}">
-        <h2>로그인</h2>
-        <div class="mb-3">
-            <input type="email" class="form-control" id="email" name="username" placeholder="이메일">
+<div class="container-fluid vh-100" style="margin-top:150px;">
+    <div style="margin-top:150px;">
+        <div class="d-flex justify-content-center">
+            <div class="col-sm-6 col-lg-4 rounded-2 shadow-lg p-5 bg-light">
+                <div class="mb-3 text-center">
+                    <h2 class="text-dark">Login</h2>
+                </div>
+                <hr class="my-2"/>
+                <form id="form-login" th:method="POST" th:action="@{~/member/login}">
+                    <div class="mb-2 form-floating">
+                        <input type="email" class="form-control rounded-2" id="email" name="username" placeholder="Email Address">
+                        <label for="email">Email Address</label>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <input type="password" class="form-control rounded-2" id="password" name="password" placeholder="Password">
+                        <label for="password">Password</label>
+                        <span class="text-danger" id="error"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2">
+                        <button type="button" class="form-control btn btn-dark btn-lg" id="btn-login">LOGIN</button>
+                    </div>
+                    <hr class="my-2"/>
+                    <div>
+                        <a href="/member/register">Dont you have an account?</a>
+                    </div>
+                    <div>
+                        <a href="/member/support/find-password">Forgot your account?</a>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-3">
-            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">
-        </div>
-        <div class="mb-2">
-            <span class="text-danger" id="error"></span>
-        </div>
-        <div class="mb-2">
-            <button type="button" class="btn-primary" id="btn-login">로그인</button>
-        </div>
-        <div class="mb-2">
-            <button type="button" class="btn btn-link" id="btn-register">계정이 없습니까?</button>
-            <button type="button" class="btn btn-link" id="btn-help">계정을 분실했습니까?</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <!-- Common Script -->
@@ -59,7 +72,7 @@
 
     function checkAll(emailValue, passwordValue) {
         if(!checkUndefined(emailValue, passwordValue)) {
-            error.innerText = "ID와 비밀번호를 입력하세요.";
+            error.innerText = "Enter your ID and Password.";
             return false;
         }
 
@@ -87,7 +100,7 @@
                 if(response.ok) {
                     return response.json();
                 }else {
-                    throw new Error("예기치 못한 오류가 발생했습니다.");
+                    throw new Error("Connection error has occurred.");
                 }
             })
             .then(responseData => {
@@ -95,7 +108,7 @@
                     let form = document.getElementById("form-login");
                     form.submit();
                 }else {
-                    error.innerText = "ID 또는 비밀번호가 틀립니다.";
+                    error.innerText = "Wrong ID or Password.";
                     return false;
                 }
             })

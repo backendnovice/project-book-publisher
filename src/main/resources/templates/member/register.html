@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/common :: common-head}">
-    <title>회원가입</title>
+    <title>Register</title>
 </head>
 <body>
 <!-- Navbar -->
@@ -9,28 +9,44 @@
 </div>
 
 <!-- Main -->
-<div class="container">
-    <form th:method="post" class="form-register" id="form-register" th:action="@{~/member/register}">
-        <h2>회원가입</h2>
-        <div class="mb-3">
-            <input type="email" class="form-control" id="email" name="email" placeholder="이메일">
-            <span class="text-danger" id="error-email"></span>
+<div class="container-fluid vh-100" style="margin-top: 150px;">
+    <div style="margin-top: 150px;">
+        <div class="d-flex justify-content-center">
+            <div class="col-sm-6 col-lg-4 rounded-2 shadow-lg p-5 bg-light">
+                <div class="mb-3 text-center">
+                    <h2 class="text-dark">Registration</h2>
+                </div>
+                <hr class="my-2"/>
+                <form id="form-register" th:method="POST" th:action="@{~/member/register}">
+                    <div class="mb-2 form-floating">
+                        <input type="email" class="form-control rounded-2" id="email" name="email" placeholder="Email Address">
+                        <label for="email">Email Address</label>
+                        <span class="text-danger" id="error-email"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2 form-floating">
+                        <input type="password" class="form-control rounded-2" id="password" name="password" placeholder="Password">
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <input type="password" class="form-control rounded-2" id="password-check" name="password-check" placeholder="Verify Password">
+                        <label for="password-check">Verify Password</label>
+                        <span class="text-danger" id="error-password"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2 form-floating">
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone Number">
+                        <label for="phone">Phone Number</label>
+                        <span class="text-danger" id="error-phone"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2">
+                        <button type="button" class="form-control btn btn-dark btn-lg" id="btn-register">REGISTER</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-3">
-            <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호">
-        </div>
-        <div class="mb-3">
-            <input type="password" class="form-control" id="password-check" name="password-check" placeholder="비밀번호 확인">
-            <span class="text-danger" id="error-password"></span>
-        </div>
-        <div class="mb-3">
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="-를 빼고 입력하세요.">
-            <span class="text-danger" id="error-phone"></span>
-        </div>
-        <div class="mb-3">
-            <button type="button" class="btn btn-primary" id="btn-register">회원가입</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <!-- Common Script -->
@@ -75,7 +91,7 @@
 
     function checkEmail(emailValue) {
         if(emailValue.length === 0) {
-            errorEmail.innerText = "이메일을 입력하세요.";
+            errorEmail.innerText = "Enter your email address.";
             return false;
         }
 
@@ -87,12 +103,16 @@
         const regexp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
         if(passwordValue.length === 0 || passwordCheckValue.length === 0) {
-            errorPassword.innerText = "비밀번호와 비밀번호 확인을 입력하세요.";
+            errorPassword.innerText = "Enter your password, verify password.";
             return false;
         }
 
+        if(!(passwordValue === !passwordCheckValue)) {
+            errorPassword.innerText = "Password does not match."
+        }
+
         if(!regexp.test(passwordValue)) {
-            errorPassword.innerText = "비밀번호는 8자 이상이고, 하나의 소문자, 대문자, 특수문자를 포함해야 합니다.";
+            errorPassword.innerText = "Password must at least 8 characters, contain lowercase, uppercase, special characters.";
             return false;
         }
 
@@ -104,12 +124,12 @@
         const regexp = /^01([0|1|6|7|8|9])([0-9]{3,4})([0-9]{4})$/;
 
         if(phoneValue.length === 0) {
-            errorPhone.innerText = "전화번호를 입력하세요.";
+            errorPhone.innerText = "Enter your phone numbers.";
             return false;
         }
 
         if(!regexp.test(phoneValue)) {
-            errorPhone.innerText = "전화번호는 숫자만을 입력해야합니다.";
+            errorPhone.innerText = "Phone numbers must contain only numbers.";
             return false;
         }
 
@@ -137,11 +157,11 @@
                     errorEmail.innerText = "";
                     return true;
                 }else {
-                    errorEmail.innerText = "아이디 또는 비밀번호가 틀립니다.";
+                    errorEmail.innerText = "This email already used by another accounts.";
                     return false;
                 }
             }else {
-                throw new Error("예기치 못한 오류가 발생했습니다.");
+                throw new Error("Connection error has occurred.");
             }
         }catch(error) {
             errorEmail.innerText = error.message;

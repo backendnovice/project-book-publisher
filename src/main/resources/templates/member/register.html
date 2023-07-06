@@ -4,6 +4,11 @@
     <title>회원가입</title>
 </head>
 <body>
+<!-- Navbar -->
+<div th:replace="~{layout/common :: common-nav}">
+</div>
+
+<!-- Main -->
 <div class="container">
     <form th:method="post" class="form-register" id="form-register" th:action="@{~/member/register}">
         <h2>회원가입</h2>
@@ -28,6 +33,11 @@
     </form>
 </div>
 
+<!-- Common Script -->
+<script th:replace="layout/common :: common-script">
+</script>
+
+<!-- Page Script -->
 <script>
     let buttonRegister = document.getElementById("btn-register");
     let errorPassword = document.getElementById("error-password");

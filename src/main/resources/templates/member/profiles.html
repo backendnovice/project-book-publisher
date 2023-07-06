@@ -6,46 +6,56 @@
     <title>프로필</title>
 </head>
 <body>
-    <div class="container">
-        <div class="mb-3">
-            <div sec:authorize="hasRole('ROLE_USER')">
-                <h4 sec:authentication="name"></h4>
-                <div>
-                    <button type="button" class="btn btn-primary" id="btn-logout">로그아웃</button>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-secondary" id="btn-change-password">암호변경</button>
-                </div>
-                <div>
-                    <form id="form-withdraw" th:method="post" th:action="@{~/member/withdraw}">
-                        <button type="submit" class="btn btn-danger" id="btn-withdraw">회원탈퇴</button>
-                    </form>
-                </div>
+<!-- Navbar -->
+<div th:replace="~{layout/common :: common-nav}">
+</div>
+
+<!-- Main -->
+<div class="container">
+    <div class="mb-3">
+        <div sec:authorize="hasRole('ROLE_USER')">
+            <h4 sec:authentication="name"></h4>
+            <div>
+                <button type="button" class="btn btn-primary" id="btn-logout">로그아웃</button>
+            </div>
+            <div>
+                <button type="button" class="btn btn-secondary" id="btn-change-password">암호변경</button>
+            </div>
+            <div>
+                <form id="form-withdraw" th:method="post" th:action="@{~/member/withdraw}">
+                    <button type="submit" class="btn btn-danger" id="btn-withdraw">회원탈퇴</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        let buttonLogout = document.getElementById("btn-logout");
-        let buttonChange = document.getElementById("btn-change-password");
-        let buttonWithdraw = document.getElementById("btn-withdraw");
+<!-- Common Script -->
+<script th:replace="layout/common :: common-script">
+</script>
 
-        buttonLogout.addEventListener("click", () => {
-            if(confirm("로그아웃 하겠습니까?")) {
-                location.href="/member/logout";
-            }
-        });
+<!-- Page Script -->
+<script>
+    let buttonLogout = document.getElementById("btn-logout");
+    let buttonChange = document.getElementById("btn-change-password");
+    let buttonWithdraw = document.getElementById("btn-withdraw");
 
-        buttonChange.addEventListener("click", () => {
-            location.href="/member/support/change-password";
-        });
+    buttonLogout.addEventListener("click", () => {
+        if (confirm("로그아웃 하겠습니까?")) {
+            location.href = "/member/logout";
+        }
+    });
 
-        buttonWithdraw.addEventListener("click", () => {
-            if(confirm("회원을 탈퇴하겠습니까?")) {
-                let form = document.getElementById("form-withdraw");
-                form.submit();
-            }
-        });
-    </script>
+    buttonChange.addEventListener("click", () => {
+        location.href = "/member/support/change-password";
+    });
+
+    buttonWithdraw.addEventListener("click", () => {
+        if (confirm("회원을 탈퇴하겠습니까?")) {
+            let form = document.getElementById("form-withdraw");
+            form.submit();
+        }
+    });
+</script>
 </body>
 </html>

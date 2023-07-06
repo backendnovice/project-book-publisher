@@ -1,16 +1,59 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<!-- Header Fragments -->
 <head th:fragment="common-head">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
           charset="UTF-8">
-    <!-- <script th:src="@{/js/jquery-3.7.0.min.js}"></script> -->
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
-    <div th:fragment="common-header">
+<!-- Navbar Fragments -->
+<div th:fragment="common-nav">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="/image/logo.svg" alt="Book's Pub" width="200" height="50">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items"
+                    aria-controls="navbar-items" aria-expanded="false" aria-label="toggle-nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbar-items">
+                <ul class="navbar-nav" id="navbar-ul">
+                    <li class="nav-item" id="nav-item-1">
+                        <a class="nav-link" href="#">About Us</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-2">
+                        <a class="nav-link" href="#">Books</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-3">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-4">
+                        <a class="nav-link" href="#">Portfolio</a>
+                    </li>
+                    <li class="nav-item" id="nav-item-5">
+                        <a class="nav-link" href="/member/login" sec:authorize="isAnonymous()">Login</a>
+                        <a class="nav-link" style="cursor: pointer" onclick="logout()" sec:authorize="isAuthenticated()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
 
-    </div>
+<!-- Page Script -->
+<script th:fragment="common-script">
+    function logout() {
+        if(confirm("로그아웃 하겠습니까?")) {
+            location.href="/member/logout";
+        }
+    }
+</script>
+
 </body>
 </html>

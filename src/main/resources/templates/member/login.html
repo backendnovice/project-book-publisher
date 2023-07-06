@@ -4,7 +4,12 @@
     <title>로그인</title>
 </head>
 <body>
-<div class="container">
+<!-- Navbar -->
+<div th:replace="~{layout/common :: common-nav}">
+</div>
+
+<!-- Main -->
+<div class="container" id="main">
     <form class="form-login" id="form-login" th:method="post" th:action="@{~/member/login}">
         <h2>로그인</h2>
         <div class="mb-3">
@@ -26,6 +31,11 @@
     </form>
 </div>
 
+<!-- Common Script -->
+<script th:replace="layout/common :: common-script">
+</script>
+
+<!-- Page Script -->
 <script>
     let buttonLogin = document.getElementById("btn-login");
     let buttonRegister = document.getElementById("btn-register");

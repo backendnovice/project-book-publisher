@@ -1,12 +1,13 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-04
+ * @date : 2023-07-09
  * @desc : DB의 회원 테이블에 대응하는 객체.
  *
  * 변경 내역 :
  * 2023-06-29 - backendnovice@gmail.com - id 무결성 위해 코드 수정
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - Role 값 USER로 임시로 고정
+ * 2023-07-09 - backendnovice@gmail.com - 활성화 여부 추가 & 코드 엔티티 매핑
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -14,6 +15,9 @@ package backendnovice.projectbookpublisher.member.domain;
 import backendnovice.projectbookpublisher.global.domain.TimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "member")
 @Entity
@@ -39,11 +43,18 @@ public class MemberEntity extends TimeEntity {
     @Column(name = "member_role")
     private MemberRole roles = MemberRole.USER;
 
+    @Column(name = "is_verified", nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isEnabled = false;
+
+    @OneToMany(mappedBy = "codes")
+    private List<CodeEntity> codes = new ArrayList<>();
+
     @Builder
-    public MemberEntity(String email, String password, String phone) {
+    public MemberEntity(String email, String password, String phone, boolean isEnabled) {
         this.email = email;
         this.password = password;
         this.phone = phone;
+        this.isEnabled = isEnabled;
     }
 
     /**
@@ -71,5 +82,14 @@ public class MemberEntity extends TimeEntity {
      */
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    /**
+     * 이메일 검증여부를 수정하는 메소드.
+     * @param isVerified
+     *      이메일 검증여부
+     */
+    public void setIsEnabled(boolean isVerified) {
+        this.isEnabled = isVerified;
     }
 }

@@ -38,6 +38,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security:3.1.1")
 	// Thymeleaf Extras Spring Security 6
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE")
+	// Spring Boot Starter Mail
+	implementation("org.springframework.boot:spring-boot-starter-mail:3.1.1")
 }
 
 tasks.withType<Test> {

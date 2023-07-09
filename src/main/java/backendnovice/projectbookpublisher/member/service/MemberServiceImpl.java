@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-05
+ * @date : 2023-07-09
  * @desc : 회원 관련 메소드를 구현하는 클래스.
  *
  * 변경 내역 :
@@ -8,17 +8,27 @@
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - 회원가입 탈퇴 메소드 구현
  * 2023-07-05 - backendnovice@gmail.com - 비밀번호 수정 메소드 구현
+ * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 기능 추가
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
+import backendnovice.projectbookpublisher.member.domain.CodeEntity;
+import backendnovice.projectbookpublisher.member.domain.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
+import backendnovice.projectbookpublisher.member.repository.CodeRepository;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,21 +36,36 @@ import java.util.regex.Pattern;
 @Service
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
+    private final CodeRepository codeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender javaMailSender;
 
-    public MemberServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+    public MemberServiceImpl(MemberRepository memberRepository, CodeRepository codeRepository
+            , PasswordEncoder passwordEncoder, JavaMailSender javaMailSender) {
         this.memberRepository = memberRepository;
+        this.codeRepository = codeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.javaMailSender = javaMailSender;
     }
 
     @Override
     public boolean doRegister(MemberDTO memberDTO) {
+        String email = memberDTO.getEmail();
         String password = memberDTO.getPassword();
 
-        // 패스워드가 같고 패턴과 일치할 경우.
+        // 패스워드가 패턴과 일치할 경우.
         if (checkPasswordPattern(password)) {
             memberDTO.setPassword(passwordEncoder.encode(password));
-            memberRepository.save(dtoToEntity(memberDTO));
+            MemberEntity member = memberRepository.save(dtoToEntity(memberDTO));
+
+            // 인증 메일 전송.
+            try {
+                sendVerifyEmail(member);
+            }catch (MessagingException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return false;
+            }
+
             return true;
         }
 
@@ -78,6 +103,72 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean validateRegister(MemberDTO memberDTO) {
         return memberRepository.existsByEmail(memberDTO.getEmail());
+    }
+
+    @Override
+    public boolean validateEmailVerification(String value, String type) {
+        Optional<CodeEntity> result = codeRepository.findByValueAndType(value, type);
+
+        if(result.isPresent()) {
+            MemberEntity member = result.get().getMember();
+
+            // 회원이 비활성화 상태라면 활성화하고 반환한다.
+            if(!member.isEnabled()) {
+                member.setIsEnabled(true);
+                memberRepository.save(member);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 인증 메일 전송 메소드.
+     * @param member
+     *      회원 엔티티
+     * @throws MessagingException
+     *      메시지 연관 에러
+     * @throws UnsupportedEncodingException
+     *      인코딩 연관 에러
+     */
+    private void sendVerifyEmail(MemberEntity member)
+            throws MessagingException, UnsupportedEncodingException {
+        CodeEntity code = generateVerifyCode(member);
+        String email = member.getEmail();
+        String from = "backendnovice@gmail.com";
+        String sender = "Book's Pub";
+        String title = "Please verify your Registration";
+        String content = "<h2>Welcome to Book's Publish Project</h2>"
+                + "<p>Please click the link below to complete Registration.</p>"
+                + "<a href=\"" + "/member/verify?value=" + code.getValue() + "&type=" + code.getType() + "\">Verify</a>"
+                + "<p>Thank you.<br>by" + sender + "</p>";
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+
+        helper.setFrom(from, sender);
+        helper.setTo(email);
+        helper.setSubject(title);
+        helper.setText(content, true);
+
+        javaMailSender.send(message);
+    }
+
+    /**
+     * 랜덤 코드를 생성하는 메소드.
+     * @return
+     *      랜덤 코드
+     */
+    private CodeEntity generateVerifyCode(MemberEntity member) {
+        String newCode = RandomStringUtils.random(64);
+
+        CodeEntity code = CodeEntity.builder()
+                .type(CodeType.REGISTER)
+                .value(newCode)
+                .member(member).build();
+
+        return codeRepository.save(code);
     }
 
     /**

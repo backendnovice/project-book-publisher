@@ -1,9 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-30
+ * @date : 2023-07-09
  * @desc : 스프링 시큐리티에서 사용되는 회원 데이터를 제공하는 클래스.
  *
  * 변경 내역 :
+ * 2023-07-09 - backendnovice@gmail.com - 회원 활성화 여부 설정
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -21,11 +22,13 @@ public class MemberDetails implements UserDetails {
     private String email;
     private String password;
     private String role;
+    private boolean isEnabled;
 
     public MemberDetails(MemberEntity member) {
         this.email = member.getEmail();
         this.password = member.getPassword();
         this.role = member.getRoles().getName();
+        this.isEnabled = member.isEnabled();
     }
 
     /**
@@ -99,6 +102,6 @@ public class MemberDetails implements UserDetails {
      */
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }

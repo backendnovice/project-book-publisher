@@ -7,6 +7,7 @@
  * 2023-07-04 - backendnovice@gmail.com - 로그아웃 및 회원탈퇴 권한 매핑
  * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 권한 매핑
  * 2023-07-06 - backendnovice@gmail.com - favicon, 이미지 권한 매핑
+ * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 권한 매핑
  */
 
 package backendnovice.projectbookpublisher.global.config;
@@ -36,7 +37,8 @@ public class SecurityConfig {
             "/member/support/change-password"
     };
     private static final String[] LINK_PUBLIC = {
-            "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure"
+            "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure",
+            "/member/verify/**"
     };
     private static final String[] LINK_RESOURCE = {
             "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico"

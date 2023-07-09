@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-05
+ * @date : 2023-07-09
  * @desc : 회원 관련 POST, GET 요청을 처리하는 클래스.
  *
  * 변경 내역 :
@@ -9,6 +9,7 @@
  * 2023-07-04 - backendnovice@gmail.com - 에러페이지, 프로필 페이지 매핑
  * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 요청 메소드 추가
  * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 추가
+ * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 메소드 추가
  */
 
 package backendnovice.projectbookpublisher.member.controller;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -82,6 +84,16 @@ public class MemberViewController {
         return "member/support/change-password";
     }
 
+    /**
+     * 이메일 인증 페이지를 매핑하는 메소드.
+     * @return
+     *      반환할 URI
+     */
+    @GetMapping("/verify")
+    public String getVerifyPage(@RequestParam String value, @RequestParam String type) {
+        return memberService.validateEmailVerification(value, type)
+                ? "member/verify/success" : "member/verify/failure";
+    }
 
     /**
      * 회원가입 서비스를 요청하는 메소드.

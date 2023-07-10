@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-10
  * @desc : 회원 관련 메소드를 구현하는 클래스.
  *
  * 변경 내역 :
@@ -8,7 +8,8 @@
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - 회원가입 탈퇴 메소드 구현
  * 2023-07-05 - backendnovice@gmail.com - 비밀번호 수정 메소드 구현
- * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 기능 추가
+ * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 메소드 구현
+ * 2023-07-10 - backendnovice@gmail.com - 이메일 재인증 메소드 구현
  */
 
 package backendnovice.projectbookpublisher.member.service;
@@ -91,6 +92,18 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public void doResendEmail(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Member Email : " + email));
+
+        try {
+            sendVerifyEmail(member);
+        }catch (MessagingException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public boolean validateLogin(MemberDTO memberDTO) {
         Optional<MemberEntity> member = memberRepository.findByEmail(memberDTO.getEmail());
 
@@ -106,18 +119,22 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public boolean validateEmailVerification(String value, String type) {
-        Optional<CodeEntity> result = codeRepository.findByValueAndType(value, type);
+    public boolean validateEmailVerification(String value, CodeType type) {
+        CodeEntity code = codeRepository.findByValueAndType(value, type)
+                .orElseThrow(IllegalArgumentException::new);
+        MemberEntity member = code.getMember();
 
-        if(result.isPresent()) {
-            MemberEntity member = result.get().getMember();
+        // 코드를 만료하고 저장한다.
+        if(code.isValid()) {
+            code.setIsValid(false);
+            codeRepository.save(code);
+        }
 
-            // 회원이 비활성화 상태라면 활성화하고 반환한다.
-            if(!member.isEnabled()) {
-                member.setIsEnabled(true);
-                memberRepository.save(member);
-                return true;
-            }
+        // 회원을 활성화하고 저장한다.
+        if(!member.isEnabled()) {
+            member.setIsEnabled(true);
+            memberRepository.save(member);
+            return true;
         }
 
         return false;
@@ -141,7 +158,8 @@ public class MemberServiceImpl implements MemberService {
         String title = "Please verify your Registration";
         String content = "<h2>Welcome to Book's Publish Project</h2>"
                 + "<p>Please click the link below to complete Registration.</p>"
-                + "<a href=\"" + "/member/verify?value=" + code.getValue() + "&type=" + code.getType() + "\">Verify</a>"
+                + "<a href=\"" + "http://localhost:8080/member/verify?value=" + code.getValue() + "&type="
+                + code.getType() + "\" target=\"_blank\">Verify</a>"
                 + "<p>Thank you.<br>by" + sender + "</p>";
 
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -161,11 +179,12 @@ public class MemberServiceImpl implements MemberService {
      *      랜덤 코드
      */
     private CodeEntity generateVerifyCode(MemberEntity member) {
-        String newCode = RandomStringUtils.random(64);
+        String newCode = RandomStringUtils.randomAlphanumeric(64);
 
         CodeEntity code = CodeEntity.builder()
                 .type(CodeType.REGISTER)
                 .value(newCode)
+                .isValid(true)
                 .member(member).build();
 
         return codeRepository.save(code);

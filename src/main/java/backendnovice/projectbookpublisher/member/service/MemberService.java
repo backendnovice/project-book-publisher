@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-10
  * @desc : 회원 관련 메소드를 정의하는 인터페이스.
  *
  * 변경 내역 :
@@ -9,10 +9,12 @@
  * 2023-07-04 - backendnovice@gmail.com - 회원가입 탈퇴 메소드 정의
  * 2023-07-05 - backendnovice@gmail.com - 비밀번호 수정 메소드 정의
  * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 메소드 정의
+ * 2023-07-10 - backendnovice@gmail.com - 이메일 재인증 메소드 정의
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
+import backendnovice.projectbookpublisher.member.domain.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 
@@ -43,7 +45,14 @@ public interface MemberService {
      *      변경할 비밀번호
      */
     void doChangePassword(String email, String password);
-    
+
+    /**
+     * 이메일 인증을 재전송하는 메소드.
+     * @param email
+     *      회원 이메일
+     */
+    void doResendEmail(String email);
+
     /**
      * 이메일과 비밀번호를 검증하는 메소드.
      * @param memberDTO
@@ -69,7 +78,7 @@ public interface MemberService {
      * @return
      *      검증 성공 여부
      */
-    boolean validateEmailVerification(String code, String type);
+    boolean validateEmailVerification(String code, CodeType type);
 
     /**
      * DTO를 엔티티 객체로 변환하는 메소드.

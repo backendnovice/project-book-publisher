@@ -1,9 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-10
  * @desc : DB의 코드 테이블에 대응하는 객체.
  *
  * 변경 내역 :
+ * 2023-07-10 - backendnovice@gmail.com - 코드 만료 여부 추가
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -23,6 +24,7 @@ import lombok.ToString;
 public class CodeEntity extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "code_id")
     private Long id;
 
     @Column(name = "code_value", length = 64)
@@ -33,13 +35,21 @@ public class CodeEntity extends TimeEntity {
     private CodeType type;
 
     @ManyToOne
-    @JoinColumn(name = "member")
+    @JoinColumn(name = "member_id")
     private MemberEntity member;
 
+    @Column(name = "is_valid", nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isValid = true;
+
     @Builder
-    public CodeEntity(String value, CodeType type, MemberEntity member) {
+    public CodeEntity(String value, CodeType type, MemberEntity member, boolean isValid) {
         this.value = value;
         this.type = type;
         this.member = member;
+        this.isValid = isValid;
+    }
+
+    public void setIsValid(boolean isValid) {
+        this.isValid = isValid;
     }
 }

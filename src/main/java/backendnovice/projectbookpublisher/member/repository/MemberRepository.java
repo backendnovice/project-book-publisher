@@ -23,18 +23,18 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     /**
      * 파라미터의 이메일과 일치하는 엔티티를 반환하는 메소드.
      * @param email
-     *      회원 이메일.
+     *      회원 이메일
      * @return
-     *      회원 엔티티.
+     *      회원 엔티티
      */
     Optional<MemberEntity> findByEmail(@Param("member_email") String email);
 
     /**
      * 파라미터의 이메일의 존재 여부를 반환하는 메소드.
      * @param email
-     *      회원 이메일.
+     *      회원 이메일
      * @return
-     *      이메일 존재 여부.
+     *      이메일 존재 여부
      */
     boolean existsByEmail(@Param("member_email") String email);
 

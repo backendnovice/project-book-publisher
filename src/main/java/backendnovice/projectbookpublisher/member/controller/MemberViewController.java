@@ -1,19 +1,21 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-10
  * @desc : 회원 관련 POST, GET 요청을 처리하는 클래스.
  *
  * 변경 내역 :
  * 2023-06-29 - backendnovice@gmail.com - MemberController.java 로부터 분할
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - 에러페이지, 프로필 페이지 매핑
- * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 요청 메소드 추가
- * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 추가
- * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 메소드 추가
+ * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 요청 서비스 매핑
+ * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 서비스 매핑
+ * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 서비스 매핑
+ * 2023-07-10 - backendnovice@gmail.com - 이메일 재전송 메소드 추가
  */
 
 package backendnovice.projectbookpublisher.member.controller;
 
+import backendnovice.projectbookpublisher.member.domain.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
 import org.springframework.stereotype.Controller;
@@ -91,8 +93,18 @@ public class MemberViewController {
      */
     @GetMapping("/verify")
     public String getVerifyPage(@RequestParam String value, @RequestParam String type) {
-        return memberService.validateEmailVerification(value, type)
+        return memberService.validateEmailVerification(value, CodeType.valueOf(type))
                 ? "member/verify/success" : "member/verify/failure";
+    }
+
+    /**
+     * 이메일 재전송 서비스를 요청하는 메소드.
+     * @return
+     *      반환할 URI
+     */
+    @GetMapping("/verify/resend")
+    public String getResendPage() {
+        return "member/verify/resend";
     }
 
     /**
@@ -106,6 +118,20 @@ public class MemberViewController {
     public String registerProcess(MemberDTO memberDTO) {
         return (memberService.doRegister(memberDTO))
                 ? "redirect:/member/login" : "redirect:/member/register";
+    }
+
+    /**
+     * 이메일 재전송 서비스를 요청하는 메소드.
+     * @param memberDTO
+     *      회원 데이터 전송 객체
+     * @return
+     *      반환할 URI
+     */
+    @PostMapping("/verify/resend")
+    public String resendProcess(MemberDTO memberDTO) {
+        memberService.doResendEmail(memberDTO.getEmail());
+
+        return "member/login";
     }
 
     /**

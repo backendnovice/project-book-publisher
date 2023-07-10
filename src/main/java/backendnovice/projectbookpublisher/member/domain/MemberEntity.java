@@ -1,13 +1,14 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-10
  * @desc : DB의 회원 테이블에 대응하는 객체.
  *
  * 변경 내역 :
  * 2023-06-29 - backendnovice@gmail.com - id 무결성 위해 코드 수정
  * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
  * 2023-07-04 - backendnovice@gmail.com - Role 값 USER로 임시로 고정
- * 2023-07-09 - backendnovice@gmail.com - 활성화 여부 추가 & 코드 엔티티 매핑
+ * 2023-07-09 - backendnovice@gmail.com - 활성화 여부 추가
+ * 2023-07-10 - backendnovice@gmail.com - 코드 엔티티 매핑
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -46,7 +47,7 @@ public class MemberEntity extends TimeEntity {
     @Column(name = "is_verified", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isEnabled = false;
 
-    @OneToMany(mappedBy = "codes")
+    @OneToMany(mappedBy = "member")
     private List<CodeEntity> codes = new ArrayList<>();
 
     @Builder

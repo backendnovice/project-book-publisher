@@ -2,7 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<!-- Header Fragments -->
+<!-- Head Fragments -->
 <head th:fragment="common-head">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -11,13 +11,17 @@
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
 </head>
 <body>
-<!-- Navbar Fragments -->
-<div th:fragment="common-nav">
+
+<!-- Header Fragments -->
+<header th:fragment="common-header">
+    <div class="container-fluid justify-content-center align-items-center">
+        <a class="navbar-brand d-flex justify-content-center my-2" href="#">
+            <img src="/image/logo.svg" alt="Book's Pub" width="200" height="50">
+        </a>
+    </div>
+    <hr class="m-0">
     <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="/image/logo.svg" alt="Book's Pub" width="200" height="50">
-            </a>
+        <div class="container-fluid my-1">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-items"
                     aria-controls="navbar-items" aria-expanded="false" aria-label="toggle-nav">
                 <span class="navbar-toggler-icon"></span>
@@ -45,7 +49,22 @@
         </div>
     </nav>
     <hr class="m-0"/>
-</div>
+</header>
+
+<!-- Footer Fragments -->
+<footer th:fragment="common-footer">
+    <hr class="m-0">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col text-center m-5">
+                <a href="https://github.com/backendnovice/project-book-publisher" target="_blank">
+                    <img src="/image/mark-github.svg" alt="Github" width="85" height="85">
+                </a>
+                <h6 class="mt-4">Copyright © 2023 backendnovice. All rights reserved.</h6>
+            </div>
+        </div>
+    </div>
+</footer>
 
 <!-- Page Script -->
 <script th:fragment="common-script">

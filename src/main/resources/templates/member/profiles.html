@@ -6,9 +6,9 @@
     <title>프로필</title>
 </head>
 <body>
-<!-- Navbar -->
-<div th:replace="~{layout/common :: common-nav}">
-</div>
+<!-- Header -->
+<header th:replace="~{layout/common :: common-header}">
+</header>
 
 <!-- Main -->
 <div class="container-fluid vh-100" style="margin-top: 150px;">
@@ -38,6 +38,10 @@
         </div>
     </div>
 </div>
+
+<!-- Footer -->
+<footer th:replace="layout/common :: common-footer">
+</footer>
 
 <!-- Common Script -->
 <script th:replace="layout/common :: common-script">

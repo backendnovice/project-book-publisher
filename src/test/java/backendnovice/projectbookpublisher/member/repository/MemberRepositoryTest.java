@@ -6,7 +6,7 @@
 
 package backendnovice.projectbookpublisher.member.repository;
 
-import backendnovice.projectbookpublisher.member.domain.MemberEntity;
+import backendnovice.projectbookpublisher.member.domain.Member;
 import jakarta.transaction.Transactional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -24,12 +24,12 @@ public class MemberRepositoryTest {
     @Transactional
     @DisplayName("Member Create Test")
     void testMemberInsert() {
-        MemberEntity member = MemberEntity.builder()
+        Member member = Member.builder()
                 .email("username@email.com")
                 .password("password")
                 .phone("01012345678").build();
 
-        MemberEntity memberSaved = memberRepository.save(member);
+        Member memberSaved = memberRepository.save(member);
 
         Assertions.assertThat(member).isSameAs(memberSaved);
         Assertions.assertThat(memberSaved.getId()).isNotNull();
@@ -42,12 +42,12 @@ public class MemberRepositoryTest {
     void testMemberSelect() {
         Long id = 3L;
 
-        MemberEntity member = MemberEntity.builder()
+        Member member = Member.builder()
                 .email("username@email.com")
                 .password("password")
                 .phone("01012345678").build();
 
-        MemberEntity memberFound = memberRepository.findById(id)
+        Member memberFound = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Member ID : " + id));
 
         Assertions.assertThat(memberFound.getId()).isNotNull();
@@ -62,14 +62,14 @@ public class MemberRepositoryTest {
     void testMemberUpdate() {
         Long id = 3L;
 
-        MemberEntity member = memberRepository.findById(id)
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Member ID : " + id));
 
         member.setEmail("updated@email.com");
         member.setPassword("updated_password");
         member.setPhone("updated_phone");
 
-        MemberEntity memberUpdated = memberRepository.save(member);
+        Member memberUpdated = memberRepository.save(member);
 
         Assertions.assertThat(memberUpdated.getId()).isNotNull();
         Assertions.assertThat(memberUpdated.getEmail()).isEqualTo(member.getEmail());
@@ -83,7 +83,7 @@ public class MemberRepositoryTest {
     void testMemberDelete() {
         memberRepository.deleteById(1L);
 
-        Optional<MemberEntity> memberDeleted = memberRepository.findById(1L);
+        Optional<Member> memberDeleted = memberRepository.findById(1L);
 
         Assertions.assertThat(memberDeleted).isEqualTo(Optional.empty());
     }

@@ -1,74 +1,75 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-06-30
- * @desc : 회원 관련 데이터 요청 및 응답을 처리하는 클래스.
+ * @desc : Handles member-related requests and responses.
  *
- * 변경 내역 :
- * 2023-06-29 - backendnovice@gmail.com - MemberController.java 로부터 분할
- * 2023-06-30 - backendnovice@gmail.com - Springdoc Swagger 적용
- * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
+ * changelog :
+ * 2023-06-29 - backendnovice@gmail.com - Split from MemberController.java
+ * 2023-06-30 - backendnovice@gmail.com - Apply springdoc swagger annotations
+ * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
  */
 
 package backendnovice.projectbookpublisher.member.controller;
 
+import backendnovice.projectbookpublisher.global.dto.ResponseDTO;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/member")
-@Tag(name = "회원 API", description = "회원 관련 데이터를 제공하는 API.")
-public class MemberAPIController {
+@Tag(name = "Member API", description = "Provides member-related APIs.")
+public class MemberApiController {
     private final MemberService memberService;
 
-    public MemberAPIController(MemberService memberService) {
+    public MemberApiController(MemberService memberService) {
         this.memberService = memberService;
     }
 
     /**
-     * 로그인에 필요한 데이터를 요청 및 전달하는 메소드.
+     * Check email, password used for login.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO with email, password
      * @return
-     *      응답 데이터
+     *      ResponseDTO
      */
     @PostMapping("/login")
-    @Operation(summary = "로그인 지원 메소드", description = "이메일, 비밀번호 일치여부를 검사하고 결과를 반환한다.")
-    public ResponseEntity<Map<String, Boolean>> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
-        Map<String, Boolean> response = new HashMap<>();
-
-        boolean isValid = memberService.validateLogin(memberDTO);
-
-        response.put("isValid", isValid);
-
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Login API", description = "Check email, password matches from DB.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "A matching tuple exists in DB."),
+            @ApiResponse(responseCode = "404", description = "A matching tuple doesn't exists in DB.")
+    })
+    public ResponseDTO<String> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
+        if(memberService.validateLogin(memberDTO)) {
+            return ResponseDTO.onSuccess("Correct email and password", null);
+        }
+        return ResponseDTO.onFailure("Incorrect email and password");
     }
 
     /**
-     * 회원가입에 필요한 데이터를 요청 및 전달하는 메소드.
+     * Check email used for registration.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO with email
      * @return
-     *      응답 데이터
+     *      ResponseEntity containing existence
      */
     @PostMapping("/register")
-    @Operation(summary = "회원가입 지원 메소드", description = "이메일 중복여부를 검사하고 결과를 반환한다.")
-    public ResponseEntity<Map<String, Boolean>> provideRegisterAPI(@RequestBody MemberDTO memberDTO) {
-        Map<String, Boolean> response = new HashMap<>();
-
-        boolean isExists = memberService.validateRegister(memberDTO);
-
-        response.put("isExists", isExists);
-
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Registration API", description = "Email duplicate check from DB.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "A matching tuple doesn't exists in DB."),
+            @ApiResponse(responseCode = "404", description = "A matching tuple exists in DB.")
+    })
+    public ResponseDTO<String> provideRegisterAPI(@RequestBody MemberDTO memberDTO) {
+        if(memberService.validateRegister(memberDTO)) {
+            return ResponseDTO.onSuccess("Email is available", null);
+        }
+        return ResponseDTO.onFailure("Email is not available.");
     }
 }

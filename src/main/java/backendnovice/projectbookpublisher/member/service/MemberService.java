@@ -1,111 +1,111 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-10
- * @desc : 회원 관련 메소드를 정의하는 인터페이스.
+ * @desc : Defines member-related feature methods.
  *
- * 변경 내역 :
- * 2023-06-29 - backendnovice@gmail.com - doRegister() 리턴 타입 수정
- * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
- * 2023-07-04 - backendnovice@gmail.com - 회원가입 탈퇴 메소드 정의
- * 2023-07-05 - backendnovice@gmail.com - 비밀번호 수정 메소드 정의
- * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 메소드 정의
- * 2023-07-10 - backendnovice@gmail.com - 이메일 재인증 메소드 정의
+ * changelog :
+ * 2023-06-29 - backendnovice@gmail.com - modify doRegister() return type
+ * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * 2023-07-04 - backendnovice@gmail.com - Define member withdraw feature
+ * 2023-07-05 - backendnovice@gmail.com - Define change password feature
+ * 2023-07-09 - backendnovice@gmail.com - Define verify email feature
+ * 2023-07-10 - backendnovice@gmail.com - Define resend email feature
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
-import backendnovice.projectbookpublisher.member.domain.CodeType;
+import backendnovice.projectbookpublisher.email.vo.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
-import backendnovice.projectbookpublisher.member.domain.MemberEntity;
+import backendnovice.projectbookpublisher.member.domain.Member;
 
 public interface MemberService {
     /**
-     * 회원 가입을 처리하고 처리 여부를 반환하는 메소드.
+     * Process member registration with DTO.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      처리 여부
+     *      Process result
      */
     boolean doRegister(MemberDTO memberDTO);
 
     /**
-     * 회원 탈퇴를 처리하고 처리 여부를 반환하는 메소드.
+     * Process member registration with email.
      * @param email
-     *      회원 이메일
+     *      Member email
      * @return
-     *      처리 여부
+     *      Process result
      */
     boolean doWithdraw(String email);
 
     /**
-     * 비밀번호 변경을 처리하고 처리 여부를 반환하는 메소드.
+     * Process change password with email, password.
      * @param email
-     *      회원 이메일
+     *      Member email
      * @param password
-     *      변경할 비밀번호
+     *      New password
      */
     void doChangePassword(String email, String password);
 
     /**
-     * 이메일 인증을 재전송하는 메소드.
+     * Resend verification email.
      * @param email
-     *      회원 이메일
+     *      Member email
      */
     void doResendEmail(String email);
 
     /**
-     * 이메일과 비밀번호를 검증하는 메소드.
+     * Validate email, password for login.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      검증 성공 여부
+     *      Validate result
      */
     boolean validateLogin(MemberDTO memberDTO);
 
     /**
-     * 이메일 중복 여부를 검증하는 메소드.
+     * Check email duplicate for registration.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      Member email
      * @return
-     *      검증 성공 여부
+     *      Validate result
      */
     boolean validateRegister(MemberDTO memberDTO);
 
     /**
-     * 이메일 인증을 검증하는 메소드.
+     * Validate email with email code.
      * @param code
-     *      인증 코드
+     *      Email code
      * @return
-     *      검증 성공 여부
+     *      Validate result
      */
     boolean validateEmailVerification(String code, CodeType type);
 
     /**
-     * DTO를 엔티티 객체로 변환하는 메소드.
+     * Convert MemberDTO to Member.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      회원 엔티티 객체
+     *      Member
      */
-    default MemberEntity dtoToEntity(MemberDTO memberDTO) {
-        return MemberEntity.builder()
+    default Member dtoToEntity(MemberDTO memberDTO) {
+        return Member.builder()
                 .email(memberDTO.getEmail())
                 .password(memberDTO.getPassword())
                 .phone(memberDTO.getPhone()).build();
     }
 
     /**
-     * 엔티티를 DTO 객체로 변환하는 메소드.
-     * @param memberEntity
-     *      회원 엔티티 객체
+     * Convert Member to MemberDTO.
+     * @param member
+     *      Member
      * @return
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      */
-    default MemberDTO entityToDTO(MemberEntity memberEntity) {
+    default MemberDTO entityToDTO(Member member) {
         return MemberDTO.builder()
-                .id(memberEntity.getId())
-                .email(memberEntity.getEmail())
-                .password(memberEntity.getPassword())
-                .phone(memberEntity.getPhone()).build();
+                .id(member.getId())
+                .email(member.getEmail())
+                .password(member.getPassword())
+                .phone(member.getPhone()).build();
     }
 }

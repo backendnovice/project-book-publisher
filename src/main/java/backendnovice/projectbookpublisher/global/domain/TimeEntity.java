@@ -1,10 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-06-30
- * @desc : 생성일자, 수정일자를 자동으로 주입하는 클래스.
+ * @desc : Automatically injects create, modify date.
  *
- * 변경 내역 :
- * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
+ * changelog :
+ * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
  */
 
 package backendnovice.projectbookpublisher.global.domain;

@@ -1,19 +1,19 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-06
- * @desc : 스프링 시큐리티를 설정하는 클래스.
+ * @date : 2023-07-09
+ * @desc : Configure spring boot starter security.
  *
- * 변경 내역 :
- * 2023-07-04 - backendnovice@gmail.com - 로그아웃 및 회원탈퇴 권한 매핑
- * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 권한 매핑
- * 2023-07-06 - backendnovice@gmail.com - favicon, 이미지 권한 매핑
- * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 권한 매핑
+ * changelog :
+ * 2023-07-04 - backendnovice@gmail.com - Granting role to logout, withdraw page
+ * 2023-07-05 - backendnovice@gmail.com - Granting role to change-password page
+ * 2023-07-06 - backendnovice@gmail.com - Granting role to favicon, image
+ * 2023-07-09 - backendnovice@gmail.com - Granting role to verify-email page
  */
 
-package backendnovice.projectbookpublisher.global.config;
+package backendnovice.projectbookpublisher.security.config;
 
-import backendnovice.projectbookpublisher.member.domain.MemberRole;
-import backendnovice.projectbookpublisher.member.service.MemberDetailsService;
+import backendnovice.projectbookpublisher.member.vo.RoleType;
+import backendnovice.projectbookpublisher.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -26,10 +26,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final MemberDetailsService memberDetailsService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    public SecurityConfig(MemberDetailsService memberDetailsService) {
-        this.memberDetailsService = memberDetailsService;
+    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl) {
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
     private static final String[] LINK_USER = {
@@ -45,9 +45,9 @@ public class SecurityConfig {
     };
 
     /**
-     * BCrypt 암호화 및 복호화 객체를 제공하는 메소드.
+     * Register PasswordEncoder as bean.
      * @return
-     *      암호화 기능을 제공하는 객체
+     *      BCryptPasswordEncoder
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -55,21 +55,21 @@ public class SecurityConfig {
     }
 
     /**
-     * 스프링 시큐리티 필터를 엮어서 제공하는 메소드.
+     * Provide spring security filter chains.
      * @return
-     *      필터 체인
+     *      Security filter chain
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                // 롤 매핑 설정.
+                // Role settings.
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(LINK_USER).hasRole(MemberRole.USER.getName())
+                        .requestMatchers(LINK_USER).hasRole(RoleType.USER.getName())
                         .requestMatchers(LINK_PUBLIC).anonymous()
                         .requestMatchers(LINK_RESOURCE).permitAll()
                         .anyRequest().authenticated()
                 )
-                // 로그인 설정.
+                // Login settings.
                 .formLogin((login) -> login
                         .loginPage("/member/login")
                         .successHandler((request, response, authentication) -> {
@@ -78,7 +78,7 @@ public class SecurityConfig {
                         .failureUrl("/member/failure")
                         .permitAll()
                 )
-                // 로그아웃 설정.
+                // Logout settings.
                 .logout((logout) -> logout
                         .logoutUrl("/member/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
@@ -87,7 +87,7 @@ public class SecurityConfig {
                         .permitAll()
                 );
 
-        // 기본 폼, CSRF, CORS 비활성화.
+        // Basic form, CSRF, CORS settings.
         httpSecurity
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .csrf(csrf -> csrf.disable())
@@ -97,15 +97,15 @@ public class SecurityConfig {
     }
 
     /**
-     * 회원 아이디와 암호를 인증하는 메소드.
+     * Register authentication bean using UserDetailsService and PasswordEncoder
      * @return
-     *      인증 객체
+     *      DaoAuthenticationProvider
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(memberDetailsService);
+        authenticationProvider.setUserDetailsService(userDetailsServiceImpl);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return authenticationProvider;

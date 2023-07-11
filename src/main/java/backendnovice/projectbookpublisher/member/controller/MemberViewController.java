@@ -1,21 +1,21 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-10
- * @desc : 회원 관련 POST, GET 요청을 처리하는 클래스.
+ * @desc : Maps member-related pages and processes requests.
  *
- * 변경 내역 :
- * 2023-06-29 - backendnovice@gmail.com - MemberController.java 로부터 분할
- * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
- * 2023-07-04 - backendnovice@gmail.com - 에러페이지, 프로필 페이지 매핑
- * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 요청 서비스 매핑
- * 2023-07-05 - backendnovice@gmail.com - 비밀번호 변경 서비스 매핑
- * 2023-07-09 - backendnovice@gmail.com - 이메일 인증 서비스 매핑
- * 2023-07-10 - backendnovice@gmail.com - 이메일 재전송 메소드 추가
+ * changelog :
+ * 2023-06-29 - backendnovice@gmail.com - Split from MemberController.java
+ * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * 2023-07-04 - backendnovice@gmail.com - Add error, profiles mapping method
+ * 2023-07-04 - backendnovice@gmail.com - Add member registration handle method
+ * 2023-07-05 - backendnovice@gmail.com - Add change password handle method
+ * 2023-07-09 - backendnovice@gmail.com - Add email verify handle method
+ * 2023-07-10 - backendnovice@gmail.com - Add email resend handle method
  */
 
 package backendnovice.projectbookpublisher.member.controller;
 
-import backendnovice.projectbookpublisher.member.domain.CodeType;
+import backendnovice.projectbookpublisher.email.vo.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 
@@ -37,9 +36,9 @@ public class MemberViewController {
     }
 
     /**
-     * 로그인 페이지를 매핑하는 메소드.
+     * Mapping login page.
      * @return
-     *      반환할 URI
+     *      Login URI
      */
     @GetMapping("/login")
     public String getLoginPage() {
@@ -47,9 +46,9 @@ public class MemberViewController {
     }
 
     /**
-     * 회원가입 페이지를 매핑하는 메소드.
+     * Mapping registration page.
      * @return
-     *      반환할 URI
+     *      Registration URI
      */
     @GetMapping("/register")
     public String getRegisterPage() {
@@ -57,9 +56,9 @@ public class MemberViewController {
     }
 
     /**
-     * 프로필 페이지를 매핑하는 메소드.
+     * Mapping profiles page.
      * @return
-     *      반환할 URI
+     *      Profiles URI
      */
     @GetMapping("/profiles")
     public String getProfilesPage() {
@@ -67,9 +66,9 @@ public class MemberViewController {
     }
 
     /**
-     * 에러 페이지를 매핑하는 메소드. (임시)
+     * Mapping login-error page.
      * @return
-     *      반환할 URI
+     *      Login-error URI
      */
     @GetMapping("/failure")
     public String getFailurePage() {
@@ -77,9 +76,9 @@ public class MemberViewController {
     }
 
     /**
-     * 비밀번호 변경 페이지를 매핑하는 메소드.
+     * Mapping change-password page.
      * @return
-     *      반환할 URI
+     *      Change-password URI
      */
     @GetMapping("/support/change-password")
     public String getChangePasswordPage() {
@@ -87,9 +86,9 @@ public class MemberViewController {
     }
 
     /**
-     * 이메일 인증 페이지를 매핑하는 메소드.
+     * Mapping email-verify page.
      * @return
-     *      반환할 URI
+     *      Email-verify URI
      */
     @GetMapping("/verify")
     public String getVerifyPage(@RequestParam String value, @RequestParam String type) {
@@ -98,9 +97,9 @@ public class MemberViewController {
     }
 
     /**
-     * 이메일 재전송 서비스를 요청하는 메소드.
+     * Mapping email-resend page.
      * @return
-     *      반환할 URI
+     *      Email-resend URI
      */
     @GetMapping("/verify/resend")
     public String getResendPage() {
@@ -108,11 +107,11 @@ public class MemberViewController {
     }
 
     /**
-     * 회원가입 서비스를 요청하는 메소드.
+     * Handle member registration service.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      반환할 URI
+     *      Redirect URI (login | register)
      */
     @PostMapping("/register")
     public String registerProcess(MemberDTO memberDTO) {
@@ -121,11 +120,11 @@ public class MemberViewController {
     }
 
     /**
-     * 이메일 재전송 서비스를 요청하는 메소드.
+     * Handle email resend service.
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      반환할 URI
+     *      Login URI
      */
     @PostMapping("/verify/resend")
     public String resendProcess(MemberDTO memberDTO) {
@@ -135,33 +134,31 @@ public class MemberViewController {
     }
 
     /**
-     * 회원탈퇴 서비스를 요청하는 메소드.
+     * Handle member withdraw service.
      * @param principal
-     *      회원 정보 객체
+     *      Logged in member
      * @return
-     *      반환할 URI
+     *      Redirect URI (logout | profiles)
      */
     @PostMapping("/withdraw")
-    public String withdrawProcess(Principal principal, RedirectAttributes redirectAttributes) {
+    public String withdrawProcess(Principal principal) {
         String email = principal.getName();
 
         if (memberService.doWithdraw(email)) {
-            redirectAttributes.addFlashAttribute("msg", "회원정보 탈퇴를 성공했습니다.");
             return "redirect:/member/logout";
         } else {
-            redirectAttributes.addFlashAttribute("msg", "회원정보 탈퇴를 실패했습니다.");
             return "redirect:/member/profiles";
         }
     }
 
     /**
-     * 비밀번호 변경 서비스를 요청하는 메소드.
+     * Handle change password service.
      * @param principal
-     *      회원 정보 객체
+     *      Logged in member
      * @param memberDTO
-     *      회원 데이터 전송 객체
+     *      MemberDTO
      * @return
-     *      반환할 URI
+     *      Redirect logout URI
      */
     @PostMapping("/support/change-password")
     public String changePasswordProcess(Principal principal, MemberDTO memberDTO) {

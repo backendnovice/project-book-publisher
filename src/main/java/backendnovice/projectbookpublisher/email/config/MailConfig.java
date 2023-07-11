@@ -1,13 +1,13 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-10
- * @desc : 메일을 설정하는 클래스.
+ * @desc : Configure Spring Boot Starter Mail.
  *
- * 변경 내역 :
- * 2023-07-10 - backendnovice@gmail.com - JavaMailSender 설정 적용
+ * changelog :
+ * 2023-07-10 - backendnovice@gmail.com - Modify JavaMailSender()
  */
 
-package backendnovice.projectbookpublisher.global.config;
+package backendnovice.projectbookpublisher.email.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +29,7 @@ public class MailConfig {
     private int port;
 
     /**
-     * JavaMailSender을 Bean으로 등록하는 메소드.
+     * Register JavaMailSender as bean.
      * @return
      *      JavaMailSender
      */
@@ -48,9 +48,9 @@ public class MailConfig {
     }
 
     /**
-     * JavaMailSender의 설정을 제공하는 메소드.
+     * Provide properties to JavaMailSender
      * @return
-     *      설정 Properties
+     *      Properties
      */
     private Properties getMailProperties() {
         Properties properties = new Properties();

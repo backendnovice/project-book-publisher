@@ -1,16 +1,16 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-04
- * @desc : DB에 회원 데이터를 입출력하는 인터페이스.
+ * @desc : Provides queries to perform I/O for 'member' table.
  *
- * 변경 내역 :
- * 2023-06-30 - backendnovice@gmail.com - 코드화 주석 변경 내역 추가
- * 2023-07-04 - backendnovice@gmail.com - 회원탈퇴 쿼리 추가
+ * changelog :
+ * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * 2023-07-04 - backendnovice@gmail.com - Add withdraw query
  **/
 
 package backendnovice.projectbookpublisher.member.repository;
 
-import backendnovice.projectbookpublisher.member.domain.MemberEntity;
+import backendnovice.projectbookpublisher.member.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,32 +18,32 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /**
-     * 파라미터의 이메일과 일치하는 엔티티를 반환하는 메소드.
+     * Return columns matching with email parameter.
      * @param email
-     *      회원 이메일
+     *      Member email
      * @return
-     *      회원 엔티티
+     *      Member
      */
-    Optional<MemberEntity> findByEmail(@Param("member_email") String email);
+    Optional<Member> findByEmail(@Param("member_email") String email);
 
     /**
-     * 파라미터의 이메일의 존재 여부를 반환하는 메소드.
+     * Return existence matching with email parameter.
      * @param email
-     *      회원 이메일
+     *      Member email
      * @return
-     *      이메일 존재 여부
+     *      Email existence
      */
     boolean existsByEmail(@Param("member_email") String email);
 
     /**
-     * 파리미터 이메일과 일치하는 컬럼을 제거하는 메소드.
+     * Delete columns matching with email parameter.
      * @param email
-     *      회원 이메일
+     *      Member email
      * @return
-     *      삭제한 컬럼 개수
+     *      Deletions counts
      */
     Long deleteByEmail(@Param("member_email") String email);
 }

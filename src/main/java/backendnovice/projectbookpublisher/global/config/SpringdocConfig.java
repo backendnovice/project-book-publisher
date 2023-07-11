@@ -1,10 +1,9 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-04
- * @desc : Springdoc 설정 클래스
+ * @desc : Configure Springdoc.
  *
- * 변경 내역 :
- * 2023-07-04 - backendnovice@gmail.com - title 수정
+ * changelog :
  */
 
 package backendnovice.projectbookpublisher.global.config;
@@ -20,6 +19,13 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition
 @Configuration
 public class SpringdocConfig {
+    /**
+     * Register OpenAPI as bean.
+     * @param version
+     *      Documentation version
+     * @return
+     *      OpenAPI
+     */
     @Bean
     public OpenAPI openAPI(@Value("${springdoc.version}") String version) {
         Info info = new Info()

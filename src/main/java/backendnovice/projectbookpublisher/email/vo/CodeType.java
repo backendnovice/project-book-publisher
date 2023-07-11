@@ -1,12 +1,12 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-07-09
- * @desc : 코드 테이블의 타입명을 갖는 Enum.
+ * @desc : Defines type of email code.
  *
- * 변경 내역 :
+ * changelog :
  */
 
-package backendnovice.projectbookpublisher.member.domain;
+package backendnovice.projectbookpublisher.email.vo;
 
 public enum CodeType {
     REGISTER("REGISTER"),
@@ -18,7 +18,7 @@ public enum CodeType {
         this.type = type;
     }
 
-    public String getName() {
+    public String getValue() {
         return type;
     }
 }

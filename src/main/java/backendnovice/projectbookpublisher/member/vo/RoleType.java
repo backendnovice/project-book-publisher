@@ -1,20 +1,20 @@
 /**
  * @author : backendnovice@gmail.com
  * @date : 2023-06-30
- * @desc : 회원 테이블의 역할명을 갖는 Enum.
+ * @desc : Defines type of member role.
  *
- * 변경 내역 :
+ * changelog :
  */
 
-package backendnovice.projectbookpublisher.member.domain;
+package backendnovice.projectbookpublisher.member.vo;
 
-public enum MemberRole {
+public enum RoleType {
     USER("USER"),
     ADMIN("ADMIN");
 
     private String role;
 
-    MemberRole(String role) {
+    RoleType(String role) {
         this.role = role;
     }
 

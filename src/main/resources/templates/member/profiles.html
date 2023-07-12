@@ -67,6 +67,8 @@
         if (confirm("Are you sure withdraw your account?")) {
             let form = document.getElementById("form-withdraw");
             form.submit();
+        }else {
+            return false;
         }
     });
 </script>

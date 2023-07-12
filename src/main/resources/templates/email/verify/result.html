@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/common :: common-head}">
-    <title>Login Error</title>
+    <title>Sent Verify Email</title>
 </head>
 <body>
 <!-- Header -->
@@ -14,11 +14,11 @@
         <div class="d-flex justify-content-center">
             <div class="col-sm-6 col-lg-4 rounded-2 shadow-lg p-5 bg-light text-center">
                 <div class="mb-3 ">
-                    <h2 class="text-dark">Login Error</h2>
+                    <h2 class="text-dark">Sent Verify Email</h2>
                 </div>
                 <div>
-                    <p>Your account is in a disabled state. Check your email and enter the verification link.</p>
-                    <a href="/email/verify/resend">Can't receive any message?</a>
+                    <p>A verification email has been sent. Please check your mailbox.</p>
+                    <a href="/member/login">Back to login page.</a>
                 </div>
             </div>
         </div>
@@ -32,6 +32,5 @@
 <!-- Common Script -->
 <script th:replace="layout/common :: common-script">
 </script>
-
 </body>
 </html>

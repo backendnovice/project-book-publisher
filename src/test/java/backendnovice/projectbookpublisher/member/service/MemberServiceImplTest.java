@@ -39,7 +39,7 @@ class MemberServiceImplTest {
         Mockito.when(memberRepository.save(Mockito.any()))
                 .thenReturn(Member.builder().build());
 
-        boolean result = memberServiceImpl.doRegister(memberDTO);
+        boolean result = memberServiceImpl.register(memberDTO);
 
         Assertions.assertTrue(result);
     }
@@ -52,7 +52,7 @@ class MemberServiceImplTest {
                 .password("password")
                 .build();
 
-        boolean result = memberServiceImpl.doRegister(memberDTO);
+        boolean result = memberServiceImpl.register(memberDTO);
 
         Assertions.assertFalse(result);
     }
@@ -73,7 +73,7 @@ class MemberServiceImplTest {
         Mockito.when(memberRepository.findByEmail(Mockito.any()))
                 .thenReturn(Optional.of(member));
 
-        boolean result = memberServiceImpl.validateLogin(memberDTO);
+        boolean result = memberServiceImpl.checkLogin(memberDTO);
 
         Assertions.assertTrue(result);
     }
@@ -88,7 +88,7 @@ class MemberServiceImplTest {
 
         Mockito.when(memberRepository.findByEmail(Mockito.any())).thenReturn(Optional.empty());
 
-        boolean result = memberServiceImpl.validateLogin(memberDTO);
+        boolean result = memberServiceImpl.checkLogin(memberDTO);
 
         Assertions.assertFalse(result);
     }
@@ -102,7 +102,7 @@ class MemberServiceImplTest {
 
         Mockito.when(memberRepository.existsByEmail(Mockito.any())).thenReturn(true);
 
-        boolean result = memberServiceImpl.validateRegister(memberDTO);
+        boolean result = memberServiceImpl.checkRegister(memberDTO);
 
         Assertions.assertTrue(result);
     }
@@ -116,7 +116,7 @@ class MemberServiceImplTest {
 
         Mockito.when(memberRepository.existsByEmail(Mockito.any())).thenReturn(false);
 
-        boolean result = memberServiceImpl.validateRegister(memberDTO);
+        boolean result = memberServiceImpl.checkRegister(memberDTO);
 
         Assertions.assertFalse(result);
     }

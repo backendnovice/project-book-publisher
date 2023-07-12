@@ -38,7 +38,7 @@ public class SecurityConfig {
     };
     private static final String[] LINK_PUBLIC = {
             "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure",
-            "/member/verify/**"
+            "/email/verify/**"
     };
     private static final String[] LINK_RESOURCE = {
             "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico"

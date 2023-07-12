@@ -15,14 +15,12 @@
 
 package backendnovice.projectbookpublisher.member.controller;
 
-import backendnovice.projectbookpublisher.email.vo.CodeType;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 
@@ -86,27 +84,6 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping email-verify page.
-     * @return
-     *      Email-verify URI
-     */
-    @GetMapping("/verify")
-    public String getVerifyPage(@RequestParam String value, @RequestParam String type) {
-        return memberService.validateEmailVerification(value, CodeType.valueOf(type))
-                ? "member/verify/success" : "member/verify/failure";
-    }
-
-    /**
-     * Mapping email-resend page.
-     * @return
-     *      Email-resend URI
-     */
-    @GetMapping("/verify/resend")
-    public String getResendPage() {
-        return "member/verify/resend";
-    }
-
-    /**
      * Handle member registration service.
      * @param memberDTO
      *      MemberDTO
@@ -115,22 +92,8 @@ public class MemberViewController {
      */
     @PostMapping("/register")
     public String registerProcess(MemberDTO memberDTO) {
-        return (memberService.doRegister(memberDTO))
-                ? "redirect:/member/login" : "redirect:/member/register";
-    }
-
-    /**
-     * Handle email resend service.
-     * @param memberDTO
-     *      MemberDTO
-     * @return
-     *      Login URI
-     */
-    @PostMapping("/verify/resend")
-    public String resendProcess(MemberDTO memberDTO) {
-        memberService.doResendEmail(memberDTO.getEmail());
-
-        return "member/login";
+        return (memberService.register(memberDTO))
+                ? "redirect:/email/verify/result" : "redirect:/member/register";
     }
 
     /**
@@ -143,12 +106,9 @@ public class MemberViewController {
     @PostMapping("/withdraw")
     public String withdrawProcess(Principal principal) {
         String email = principal.getName();
+        memberService.withdraw(email);
 
-        if (memberService.doWithdraw(email)) {
-            return "redirect:/member/logout";
-        } else {
-            return "redirect:/member/profiles";
-        }
+        return "redirect:/member/logout";
     }
 
     /**
@@ -165,7 +125,7 @@ public class MemberViewController {
         String email = principal.getName();
         String password = memberDTO.getPassword();
 
-        memberService.doChangePassword(email, password);
+        memberService.changePassword(email, password);
 
         return "redirect:/member/logout";
     }

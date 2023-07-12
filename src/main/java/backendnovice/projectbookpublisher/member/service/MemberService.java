@@ -26,7 +26,7 @@ public interface MemberService {
      * @return
      *      Process result
      */
-    boolean doRegister(MemberDTO memberDTO);
+    boolean register(MemberDTO memberDTO);
 
     /**
      * Process member registration with email.
@@ -35,7 +35,7 @@ public interface MemberService {
      * @return
      *      Process result
      */
-    boolean doWithdraw(String email);
+    boolean withdraw(String email);
 
     /**
      * Process change password with email, password.
@@ -44,23 +44,16 @@ public interface MemberService {
      * @param password
      *      New password
      */
-    void doChangePassword(String email, String password);
+    void changePassword(String email, String password);
 
     /**
-     * Resend verification email.
-     * @param email
-     *      Member email
-     */
-    void doResendEmail(String email);
-
-    /**
-     * Validate email, password for login.
+     * Check email, password for login.
      * @param memberDTO
      *      MemberDTO
      * @return
      *      Validate result
      */
-    boolean validateLogin(MemberDTO memberDTO);
+    boolean checkLogin(MemberDTO memberDTO);
 
     /**
      * Check email duplicate for registration.
@@ -69,16 +62,7 @@ public interface MemberService {
      * @return
      *      Validate result
      */
-    boolean validateRegister(MemberDTO memberDTO);
-
-    /**
-     * Validate email with email code.
-     * @param code
-     *      Email code
-     * @return
-     *      Validate result
-     */
-    boolean validateEmailVerification(String code, CodeType type);
+    boolean checkRegister(MemberDTO memberDTO);
 
     /**
      * Convert MemberDTO to Member.

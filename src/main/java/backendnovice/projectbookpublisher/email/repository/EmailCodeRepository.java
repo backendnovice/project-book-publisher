@@ -4,7 +4,7 @@
  * @desc : Provides queries to perform I/O for 'email_code' table.
  *
  * changelog :
- * 2023-07-04 - backendnovice@gmail.com - Modify findByKeyAndType() query
+ * 2023-07-10 - backendnovice@gmail.com - Modify findByKeyAndType() query
  **/
 
 package backendnovice.projectbookpublisher.email.repository;

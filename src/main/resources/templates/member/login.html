@@ -108,7 +108,7 @@
                 }
             })
             .then(responseData => {
-                if(responseData.isValid === true) {
+                if(responseData.code === 200) {
                     let form = document.getElementById("form-login");
                     form.submit();
                 }else {

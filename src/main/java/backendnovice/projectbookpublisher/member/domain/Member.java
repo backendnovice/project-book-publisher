@@ -49,7 +49,7 @@ public class Member extends TimeEntity {
     @Column(name = "is_enabled", nullable = false, columnDefinition = "TINYINT(1)")
     private boolean enabled = false;
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<EmailCode> emailCodes = new ArrayList<>();
 
     @Builder

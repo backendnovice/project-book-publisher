@@ -17,7 +17,7 @@
           <h2 class="text-dark">Send Verify Email</h2>
         </div>
         <hr class="my-2"/>
-        <form id="form-send" th:method="POST" th:action="@{~/member/verify/resend}">
+        <form id="form-send" th:method="POST" th:action="@{~/email/verify/resend}">
           <div class="mb-2 form-floating">
             <input type="email" class="form-control rounded-2" id="email" name="email" placeholder="Email Address">
             <label for="email">Email Address</label>

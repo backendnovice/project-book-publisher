@@ -47,7 +47,7 @@ public class MemberApiController {
             @ApiResponse(responseCode = "404", description = "A matching tuple doesn't exists in DB.")
     })
     public ResponseDTO<String> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
-        if(memberService.validateLogin(memberDTO)) {
+        if(memberService.checkLogin(memberDTO)) {
             return ResponseDTO.onSuccess("Correct email and password", null);
         }
         return ResponseDTO.onFailure("Incorrect email and password");
@@ -67,7 +67,7 @@ public class MemberApiController {
             @ApiResponse(responseCode = "404", description = "A matching tuple exists in DB.")
     })
     public ResponseDTO<String> provideRegisterAPI(@RequestBody MemberDTO memberDTO) {
-        if(memberService.validateRegister(memberDTO)) {
+        if(memberService.checkRegister(memberDTO)) {
             return ResponseDTO.onSuccess("Email is available", null);
         }
         return ResponseDTO.onFailure("Email is not available.");

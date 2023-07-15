@@ -6,7 +6,7 @@
  * changelog :
  */
 
-package backendnovice.projectbookpublisher.global.dto;
+package backendnovice.projectbookpublisher.common.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

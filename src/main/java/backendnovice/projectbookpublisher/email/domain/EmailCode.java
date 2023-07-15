@@ -9,7 +9,7 @@
 
 package backendnovice.projectbookpublisher.email.domain;
 
-import backendnovice.projectbookpublisher.global.domain.TimeEntity;
+import backendnovice.projectbookpublisher.common.domain.Times;
 import backendnovice.projectbookpublisher.email.vo.CodeType;
 import backendnovice.projectbookpublisher.member.domain.Member;
 import jakarta.persistence.*;
@@ -23,7 +23,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @Entity
-public class EmailCode extends TimeEntity {
+public class EmailCode extends Times {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "code_id")
@@ -36,12 +36,12 @@ public class EmailCode extends TimeEntity {
     @Column(name = "code_type")
     private CodeType type;
 
+    @Column(name = "is_expired", nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean expired = false;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @Column(name = "is_expired", nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean expired = false;
 
     @Builder
     public EmailCode(String key, CodeType type, Member member, boolean expired) {

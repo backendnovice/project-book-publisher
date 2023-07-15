@@ -1,13 +1,14 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-06-30
+ * @date : 2023-07-15
  * @desc : Automatically injects create, modify date.
  *
  * changelog :
  * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * 2023-07-15 - backendnovice@gmail.com - Rename to 'Times.class'
  */
 
-package backendnovice.projectbookpublisher.global.domain;
+package backendnovice.projectbookpublisher.common.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class TimeEntity {
+public class Times {
     @CreatedDate
     @Column(name = "date_create", updatable = false)
     private LocalDateTime dateCreate;

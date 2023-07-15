@@ -13,8 +13,9 @@
 
 package backendnovice.projectbookpublisher.member.domain;
 
+import backendnovice.projectbookpublisher.book.domain.Book;
 import backendnovice.projectbookpublisher.email.domain.EmailCode;
-import backendnovice.projectbookpublisher.global.domain.TimeEntity;
+import backendnovice.projectbookpublisher.common.domain.Times;
 import backendnovice.projectbookpublisher.member.vo.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,10 +28,10 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends TimeEntity {
+public class Member extends Times {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", unique = true, nullable = false)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(name = "member_email", nullable = false)
@@ -39,7 +40,7 @@ public class Member extends TimeEntity {
     @Column(name = "member_password", nullable = false)
     private String password;
 
-    @Column(name = "member_phone")
+    @Column(name = "member_phone", nullable = false)
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -51,6 +52,9 @@ public class Member extends TimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<EmailCode> emailCodes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Book> books = new ArrayList<>();
 
     @Builder
     public Member(String email, String password, String phone, boolean enabled) {

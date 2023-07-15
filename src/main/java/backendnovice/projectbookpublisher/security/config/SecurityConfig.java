@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -34,14 +35,14 @@ public class SecurityConfig {
 
     private static final String[] LINK_USER = {
             "/member/profiles", "/member/failure", "/member/logout", "/member/withdraw",
-            "/member/support/change-password"
+            "/member/support/change-password", "/books/register"
     };
     private static final String[] LINK_PUBLIC = {
             "/member/login", "/member/register", "/api/v1/member/login", "/api/v1/member/register", "/member/failure",
             "/email/verify/**"
     };
-    private static final String[] LINK_RESOURCE = {
-            "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico"
+    private static final String[] LINK_COMMON = {
+            "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico", "/", "/home", "/about", "/books/list/**"
     };
 
     /**
@@ -66,7 +67,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(LINK_USER).hasRole(RoleType.USER.getName())
                         .requestMatchers(LINK_PUBLIC).anonymous()
-                        .requestMatchers(LINK_RESOURCE).permitAll()
+                        .requestMatchers(LINK_COMMON).permitAll()
                         .anyRequest().authenticated()
                 )
                 // Login settings.
@@ -89,9 +90,9 @@ public class SecurityConfig {
 
         // Basic form, CSRF, CORS settings.
         httpSecurity
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable());
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
     }

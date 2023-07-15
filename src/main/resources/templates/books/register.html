@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/common :: common-head}">
+    <title>Book Registration</title>
+</head>
+<body>
+<!-- Header -->
+<header th:replace="~{layout/common :: common-header}">
+</header>
+
+<!-- Main -->
+<div class="container-fluid vh-100" style="margin-top: 150px; margin-bottom: 150px;">
+    <div style="margin-top: 150px;">
+        <div class="d-flex justify-content-center">
+            <div class="col-sm-6 col-lg-4 rounded-2 shadow-lg p-5 bg-light">
+                <div class="mb-3 text-center">
+                    <h2 class="text-dark">Book Registration</h2>
+                </div>
+                <hr class="my-2">
+                <form id="form-register" th:method="POST" th:action="@{~/books/register}" enctype="multipart/form-data">
+                    <div class="mb-2 form-floating">
+                        <input type="text" class="form-control rounded-2" id="title" name="title" placeholder="Book Title">
+                        <label for="title">Book Title</label>
+                        <span class="text-danger" id="error-title"></span>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <input type="text" class="form-control rounded-2" id="author" name="author" placeholder="Book Author">
+                        <label for="author">Book Author</label>
+                        <span class="text-danger" id="error-author"></span>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <textarea class="form-control rounded-2" style="height: 200px;" id="content" name="content" placeholder="Book Content"></textarea>
+                        <label for="content">Book Content</label>
+                        <span class="text-danger" id="error-content"></span>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <input type="date" class="form-control rounded-2" id="date" name="datePublish" placeholder="Book Publish Date">
+                        <label for="date">Book Publish Date</label>
+                        <span class="text-danger" id="error-date"></span>
+                    </div>
+                    <div class="mb-2 form-floating">
+                        <select class="form-control rounded-2 mb-2" id="type" name="type">
+                            <option selected value="NONE">NONE</option>
+                            <option value="ESSAY">ESSAY</option>
+                            <option value="NOVEL">NOVEL</option>
+                            <option value="POEM">POEM</option>
+                            <option value="STUDY">STUDY</option>
+                        </select>
+                        <label for="type">Type</label>
+                        <span class="text-danger" id="error-type"></span>
+                    </div>
+                    <hr class="my-2"/>
+                    <div class="mb-2">
+                        <img class="rounded mx-auto d-block mb-2" id="preview" style="width: 200px; height: 200px;">
+                        <input type="file" class="form-control rounded-2 mb-2" id="image" name="image" accept="image/png, image/jpeg">
+                        <span class="text-danger" id="error-image"></span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="mb-2">
+                        <button type="button" class="form-control btn btn-dark btn-lg" id="btn-register">REGISTER</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{layout/common :: common-footer}">
+</footer>
+
+<!-- Common script -->
+<script th:replace="~{layout/common :: common-script}">
+</script>
+
+<!-- Page script -->
+<script>
+    const buttonRegister = document.getElementById("btn-register");
+    const inputImage = document.getElementById("image");
+    const preview = document.getElementById("preview");
+    const errorTitle = document.getElementById("error-title");
+    const errorAuthor = document.getElementById("error-author");
+    const errorContent = document.getElementById("error-content");
+    const errorDate = document.getElementById("error-date");
+    const errorType = document.getElementById("error-type");
+    const errorImage = document.getElementById("error-image");
+
+    document.addEventListener("DOMContentLoaded", () => {
+        let current = Date.now();
+        let offset = new Date().getTimezoneOffset() * 60000;
+        let today = new Date(current - offset).toISOString().split("T")[0];
+        document.getElementById("date").setAttribute("max", today);
+    });
+
+    inputImage.addEventListener("change", () => {
+        previewImage();
+    });
+
+    buttonRegister.addEventListener("click", () => {
+        checkAll();
+    });
+
+    function previewImage() {
+        let reader = new FileReader();
+
+        reader.onload = ({ target }) => {
+            preview.src = target.result;
+        }
+
+        reader.readAsDataURL(inputImage.files[0]);
+    }
+
+    function checkAll() {
+        let titleValue = document.getElementById("title").value;
+        let authorValue = document.getElementById("author").value;
+        let contentValue = document.getElementById("content").value;
+        let dateValue = document.getElementById("date").value;
+        let typeValue = document.getElementById("type").value;
+        let imageValue = document.getElementById("image").value;
+        let isValid = true;
+
+        if(!checkTitle(titleValue)) {
+            isValid = false;
+        }
+
+        if(!checkAuthor(authorValue)) {
+            isValid = false;
+        }
+
+        if(!checkContent(contentValue)) {
+            isValid = false;
+        }
+
+        if(!checkDate(dateValue)) {
+            isValid = false;
+        }
+
+        if(!checkType(typeValue)) {
+            isValid = false;
+        }
+
+        if(!checkImage(imageValue)) {
+            isValid = false;
+        }
+
+        if(isValid) {
+            let form = document.getElementById("form-register");
+            form.submit();
+        }
+    }
+
+    function checkTitle(titleValue) {
+        if(titleValue.length === 0) {
+            errorTitle.innerText = "Enter book title.";
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkAuthor(authorValue) {
+        if(authorValue.length === 0) {
+            errorAuthor.innerText = "Enter book author.";
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkContent(contentValue) {
+        if(contentValue.length === 0) {
+            errorContent.innerText = "Enter book content.";
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkDate(dateValue) {
+        if(dateValue.length === 0) {
+            errorDate.innerText = "Choose book publish date.";
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkType(typeValue) {
+        if(typeValue === "NONE") {
+            errorType.innerText = "Choose book type.";
+            return false;
+        }
+
+        return true;
+    }
+
+    function checkImage(imageValue) {
+        if(!imageValue) {
+            errorImage.innerText = "Attach book image.";
+            return false;
+        }
+
+        return true;
+    }
+</script>
+</body>
+</html>

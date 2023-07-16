@@ -4,12 +4,12 @@
  * @desc : Book data transfer object.
  *
  * changelog :
+ * 2023-07-16 - backendnovice@gmail.com - Remove image dto
  */
 
 package backendnovice.projectbookpublisher.book.dto;
 
 import backendnovice.projectbookpublisher.book.vo.BookType;
-import backendnovice.projectbookpublisher.image.dto.ImageDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,7 +41,4 @@ public class BookDTO {
 
     @Schema(description = "Book type.")
     private BookType type;
-
-    @Schema(description = "Image DTO")
-    private ImageDTO imageDTO;
 }

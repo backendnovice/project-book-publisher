@@ -1,6 +1,6 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-09
+ * @date : 2023-07-16
  * @desc : Configure spring boot starter security.
  *
  * changelog :
@@ -8,6 +8,7 @@
  * 2023-07-05 - backendnovice@gmail.com - Granting role to change-password page
  * 2023-07-06 - backendnovice@gmail.com - Granting role to favicon, image
  * 2023-07-09 - backendnovice@gmail.com - Granting role to verify-email page
+ * 2023-07-16 - backendnovice@gmail.com - Granting role to book read, register page
  */
 
 package backendnovice.projectbookpublisher.security.config;
@@ -42,7 +43,8 @@ public class SecurityConfig {
             "/email/verify/**"
     };
     private static final String[] LINK_COMMON = {
-            "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico", "/", "/home", "/about", "/books/list/**"
+            "/css/**", "/js/**", "/layout/**", "/image/**", "favicon.ico", "/", "/home", "/about", "/books/list/**",
+            "/books/read/**"
     };
 
     /**

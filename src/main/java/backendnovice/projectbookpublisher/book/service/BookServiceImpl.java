@@ -1,9 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-15
+ * @date : 2023-07-16
  * @desc : Implements book-related feature methods.
  *
  * changelog :
+ * 2023-07-16 - backendnovice@gmail.com - Implement book select feature
  */
 
 package backendnovice.projectbookpublisher.book.service;
@@ -41,5 +42,10 @@ public class BookServiceImpl implements BookService {
                 .build();
 
         bookRepository.save(book);
+    }
+
+    @Override
+    public Book select(Long id) {
+        return bookRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Book not found by ID: " + id));
     }
 }

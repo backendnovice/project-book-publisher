@@ -29,7 +29,7 @@
                         <span class="text-danger" id="error-author"></span>
                     </div>
                     <div class="mb-2 form-floating">
-                        <textarea class="form-control rounded-2" style="height: 200px;" id="content" name="content" placeholder="Book Content"></textarea>
+                        <textarea class="form-control rounded-2" style="height: 200px;" id="content" name="content" wrap="hard" placeholder="Book Content"></textarea>
                         <label for="content">Book Content</label>
                         <span class="text-danger" id="error-content"></span>
                     </div>
@@ -144,6 +144,7 @@
         }
 
         if(isValid) {
+            contentValue.replace(/\r\n|\n/, "<br>");
             let form = document.getElementById("form-register");
             form.submit();
         }

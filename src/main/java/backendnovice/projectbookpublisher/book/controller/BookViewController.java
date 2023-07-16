@@ -1,13 +1,15 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-15
+ * @date : 2023-07-16
  * @desc : Maps book-related pages and processes requests.
  *
  * changelog :
+ * 2023-07-16 - backendnovice@gmail.com - Add book read method
  */
 
 package backendnovice.projectbookpublisher.book.controller;
 
+import backendnovice.projectbookpublisher.book.domain.Book;
 import backendnovice.projectbookpublisher.book.dto.BookDTO;
 import backendnovice.projectbookpublisher.book.service.BookService;
 import backendnovice.projectbookpublisher.image.domain.Image;
@@ -15,10 +17,8 @@ import backendnovice.projectbookpublisher.image.dto.ImageDTO;
 import backendnovice.projectbookpublisher.image.service.ImageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -58,6 +58,27 @@ public class BookViewController {
     @GetMapping("/list")
     public String getListPage() {
         return "books/list";
+    }
+
+    /**
+     * Mapping book read page with id.
+     * @param id
+     *      Book id
+     * @param model
+     *      Model object
+     * @return
+     *      Book read URI
+     */
+    @GetMapping("/read/{id}")
+    public String getReadPage(@PathVariable Long id, Model model) {
+        Book book = bookService.select(id);
+        String filename = loadImageFile(book);
+        BookDTO bookDTO = bookService.entityToDto(book);
+        bookDTO.setContent(bookDTO.getContent().replaceAll("<br>", "\r\n"));
+        model.addAttribute("book", bookDTO);
+        model.addAttribute("image", filename);
+
+        return "books/read";
     }
 
     /**
@@ -103,5 +124,18 @@ public class BookViewController {
             e.printStackTrace();
             throw new RuntimeException("Failed to upload image.");
         }
+    }
+
+    /**
+     * Load image inform by book entity.
+     * @param book
+     *      Book entity
+     * @return
+     *      File name
+     */
+    private String loadImageFile(Book book) {
+        Image image = book.getImage();
+
+        return image.getUuid() + image.getExtenstion().replace("image/", ".");
     }
 }

@@ -1,9 +1,10 @@
 /**
  * @author : backendnovice@gmail.com
- * @date : 2023-07-15
+ * @date : 2023-07-16
  * @desc : Defines book-related feature methods.
  *
  * changelog :
+ * 2023-07-16 - backendnovice@gmail.com - Define book select feature
  */
 
 package backendnovice.projectbookpublisher.book.service;
@@ -23,6 +24,13 @@ public interface BookService {
      *      Member email
      */
     public void register(BookDTO bookDTO, Image image, String email);
+
+    /**
+     * Select book by id.
+     * @param id
+     *      Book id
+     */
+    public Book select(Long id);
 
     /**
      * Convert BookDTO to Book entity.

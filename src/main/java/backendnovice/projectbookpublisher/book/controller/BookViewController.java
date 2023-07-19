@@ -1,49 +1,43 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-16
- * @desc : Maps book-related pages and processes requests.
- *
- * changelog :
- * 2023-07-16 - backendnovice@gmail.com - Add book read method
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 책과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
+ * @changelog :
+ * 23-07-15 - backendnovice@gmail.com - 책 등록 요청 핸들링 메소드 추가
+ * 23-07-16 - backendnovice@gmail.com - 책 조회 요청 핸들링 메소드 추가
+ * 23-07-18 - backendnovice@gmail.com - 책 목록 요청 핸들링 메소드 추가
+ * 23-07-19 - backendnovice@gmail.com - 관심사 분리 및 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.book.controller;
 
-import backendnovice.projectbookpublisher.book.domain.Book;
+import backendnovice.projectbookpublisher.book.domain.BookEntity;
 import backendnovice.projectbookpublisher.book.dto.BookDTO;
 import backendnovice.projectbookpublisher.book.service.BookService;
-import backendnovice.projectbookpublisher.image.domain.Image;
-import backendnovice.projectbookpublisher.image.dto.ImageDTO;
-import backendnovice.projectbookpublisher.image.service.ImageService;
-import org.springframework.beans.factory.annotation.Value;
+import backendnovice.projectbookpublisher.common.dto.PaginationDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
 import java.security.Principal;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/books")
 public class BookViewController {
     private final BookService bookService;
-    private final ImageService imageService;
 
-    public BookViewController(BookService bookService, ImageService imageService) {
+    public BookViewController(BookService bookService) {
         this.bookService = bookService;
-        this.imageService = imageService;
     }
 
-    @Value("${image.upload.directory}")
-    private String directory;
-
     /**
-     * Mapping book registration page.
+     * "/books/register"에 대한 GET 요청을 처리하고, 책 등록 뷰를 반환한다.
      * @return
-     *      Book registration URI
+     *      책 등록 뷰
      */
     @GetMapping("/register")
     public String getRegisterPage() {
@@ -51,91 +45,97 @@ public class BookViewController {
     }
 
     /**
-     * Mapping book list page.
+     * "/books/list"에 대한 GET 요청을 처리하고, 책 목록 뷰를 반환한다.
+     * @param model
+     *      뷰 전달 데이터 객체
+     * @param pageable
+     *      페이지 데이터 객체
      * @return
-     *      Book list URI
+     *      책 목록 뷰
      */
     @GetMapping("/list")
-    public String getListPage() {
+    public String getListPage(Model model,
+            @PageableDefault(page = 0, size = 10, sort = "book_id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<BookEntity> books = bookService.searchBooks(pageable);
+
+        PaginationDTO paginationDTO = new PaginationDTO(books);
+
+        model.addAttribute("books", books);
+        model.addAttribute("dto", paginationDTO);
+
         return "books/list";
     }
 
     /**
-     * Mapping book read page with id.
-     * @param id
-     *      Book id
+     * "/books/list"에 대한 GET 요청을 처리하고, 검색 옵션이 적용된 책 목록 뷰를 반환한다.
+     * @param bookDTO
+     *      검색 옵션 전달 객체
      * @param model
-     *      Model object
+     *      뷰 전달 데이터 객체
+     * @param pageable
+     *      페이지 데이터 객체
      * @return
-     *      Book read URI
+     *      책 목록 뷰
+     */
+    @GetMapping("/list")
+    public String getListPageWithOption(BookDTO bookDTO, Model model,
+            @PageableDefault(page = 0, size = 10, sort = "book_id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<BookEntity> books = null;
+
+        if(bookDTO.getTitle() != null) {
+            books = bookService.searchBooksByTitle(bookDTO.getTitle());
+        }
+        if(bookDTO.getDescription() != null) {
+            books = bookService.searchBooksByContent(bookDTO.getDescription());
+        }
+        if(bookDTO.getAuthor() != null) {
+            books = bookService.searchBooksByAuthor(bookDTO.getAuthor());
+        }
+        if(bookDTO.getType() != null) {
+            books = bookService.searchBooksByType(bookDTO.getType());
+        }
+
+        PaginationDTO paginationDTO = new PaginationDTO(books);
+
+        model.addAttribute("books", books);
+        model.addAttribute("pagination", paginationDTO);
+
+        return "books/list";
+    }
+
+    /**
+     * "/books/read"에 대한 GET 요청을 처리하고, ID에 해당하는 책 조회 뷰를 반환한다.
+     * @param id
+     *      책 ID
+     * @param model
+     *      뷰 전달 데이터 객체
+     * @return
+     *      책 조회 뷰
      */
     @GetMapping("/read/{id}")
     public String getReadPage(@PathVariable Long id, Model model) {
-        Book book = bookService.select(id);
-        String filename = loadImageFile(book);
-        BookDTO bookDTO = bookService.entityToDto(book);
-        bookDTO.setContent(bookDTO.getContent().replaceAll("<br>", "\r\n"));
+        BookDTO bookDTO = bookService.getBookOne(id);
+
         model.addAttribute("book", bookDTO);
-        model.addAttribute("image", filename);
 
         return "books/read";
     }
 
     /**
-     * Handle book register service.
+     * "/book/register"에 대한 POST 요청을 처리하고, 책 등록 서비스를 호출한다.
      * @param bookDTO
-     *      BookDTO
-     * @param imageFile
-     *      Book image file
+     *      책 데이터 전송 객체
+     * @param file
+     *      책 이미지 파일
      * @param principal
-     *      Logged in member
+     *      로그인 회원 객체
      * @return
-     *      Book list URI
+     *      책 목록 뷰
      */
     @PostMapping("/register")
-    public String registerProcess(BookDTO bookDTO, @RequestParam("image") MultipartFile imageFile, Principal principal) {
-        ImageDTO imageDTO = ImageDTO.builder()
-                .uuid(saveImageFile(imageFile))
-                .extension(imageFile.getContentType())
-                .path(directory)
-                .build();
-
-        Image image = imageService.saveImage(imageDTO);
-        bookService.register(bookDTO, image, principal.getName());
+    public String registerProcess(BookDTO bookDTO, @RequestParam("image") MultipartFile file, Principal principal) {
+        bookService.register(principal.getName(), bookDTO, file);
 
         return "books/list";
-    }
-
-    /**
-     * Save image file to the path.
-     * @param image
-     *      Image file
-     * @return
-     *      generated uuid
-     */
-    private String saveImageFile(MultipartFile image) {
-        try {
-            String uuid = UUID.randomUUID().toString();
-            String path = directory + uuid + ".png";
-            File file = new File(path);
-            image.transferTo(file);
-            return uuid;
-        }catch(IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to upload image.");
-        }
-    }
-
-    /**
-     * Load image inform by book entity.
-     * @param book
-     *      Book entity
-     * @return
-     *      File name
-     */
-    private String loadImageFile(Book book) {
-        Image image = book.getImage();
-
-        return image.getUuid() + image.getExtenstion().replace("image/", ".");
     }
 }

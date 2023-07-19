@@ -1,15 +1,15 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-09
- * @desc : Customize UserDetails for authentication.
- *
- * changelog :
- * 2023-07-09 - backendnovice@gmail.com - Add user enabled option
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : UserDetails를 구현하는 클래스.
+ * @changelog :
+ * 23-07-09 - backendnovice@gmail.com - 회원 활성화 메소드 수정
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.security.domain;
 
-import backendnovice.projectbookpublisher.member.domain.Member;
+import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,11 +25,11 @@ public class UserDetailsImpl implements UserDetails {
     private String role;
     private boolean isEnabled;
 
-    public UserDetailsImpl(Member member) {
-        this.email = member.getEmail();
-        this.password = member.getPassword();
-        this.role = member.getRoles().getName();
-        this.isEnabled = member.isEnabled();
+    public UserDetailsImpl(MemberEntity memberEntity) {
+        this.email = memberEntity.getEmail();
+        this.password = memberEntity.getPassword();
+        this.role = memberEntity.getRoles().getName();
+        this.isEnabled = memberEntity.isEnabled();
     }
 
     @Override

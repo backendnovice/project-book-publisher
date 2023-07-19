@@ -6,8 +6,8 @@
 
 package backendnovice.projectbookpublisher.member.service;
 
+import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
-import backendnovice.projectbookpublisher.member.domain.Member;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class MemberServiceImplTest {
+class MemberEntityServiceImplTest {
     @Mock
     private MemberRepository memberRepository;
 
@@ -37,7 +37,7 @@ class MemberServiceImplTest {
                 .phone("01012345678").build();
 
         Mockito.when(memberRepository.save(Mockito.any()))
-                .thenReturn(Member.builder().build());
+                .thenReturn(MemberEntity.builder().build());
 
         boolean result = memberServiceImpl.register(memberDTO);
 
@@ -65,13 +65,13 @@ class MemberServiceImplTest {
                 .password("password")
                 .build();
 
-        Member member = Member.builder()
+        MemberEntity memberEntity = MemberEntity.builder()
                 .email("username@email.com")
                 .password("password")
                 .build();
 
         Mockito.when(memberRepository.findByEmail(Mockito.any()))
-                .thenReturn(Optional.of(member));
+                .thenReturn(Optional.of(memberEntity));
 
         boolean result = memberServiceImpl.checkLogin(memberDTO);
 

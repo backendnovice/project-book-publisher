@@ -1,9 +1,9 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-16
- * @desc : Configure resources path.
- *
- * changelog :
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 리소스 경로를 설정하는 클래스.
+ * @changelog :
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.common.config;

@@ -1,95 +1,69 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-10
- * @desc : Defines member-related feature methods.
- *
- * changelog :
- * 2023-06-29 - backendnovice@gmail.com - modify doRegister() return type
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
- * 2023-07-04 - backendnovice@gmail.com - Define member withdraw feature
- * 2023-07-05 - backendnovice@gmail.com - Define change password feature
- * 2023-07-09 - backendnovice@gmail.com - Define verify email feature
- * 2023-07-10 - backendnovice@gmail.com - Define resend email feature
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 회원과 관련된 서비스 메소드를 정의하는 클래스.
+ * @changelog :
+ * 23-06-29 - backendnovice@gmail.com - 회원가입 반환 타입 변경 (String -> boolean)
+ * 23-07-04 - backendnovice@gmail.com - 회원탈퇴 메소드 정의
+ * 23-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 정의
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
-import backendnovice.projectbookpublisher.email.vo.CodeType;
+import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
-import backendnovice.projectbookpublisher.member.domain.Member;
 
 public interface MemberService {
     /**
-     * Process member registration with DTO.
+     * 회원가입을 처리한다.
      * @param memberDTO
      *      MemberDTO
      * @return
-     *      Process result
+     *      회원가입 성공여부
      */
     boolean register(MemberDTO memberDTO);
 
     /**
-     * Process member registration with email.
+     * 이메일과 일치하는 회원탈퇴를 처리한다.
      * @param email
-     *      Member email
+     *      회원 이메일
      * @return
-     *      Process result
+     *      회원탈퇴 성공여부
      */
     boolean withdraw(String email);
 
     /**
-     * Process change password with email, password.
-     * @param email
-     *      Member email
-     * @param password
-     *      New password
+     * 이메일과 일치하는 회원의 비밀번호 변경을 처리한다.
+     * @param memberDTO
+     *      MemberDTO
      */
-    void changePassword(String email, String password);
+    void changePassword(MemberDTO memberDTO);
 
     /**
-     * Check email, password for login.
+     * 로그인에 필요한 이메일과 비밀번호를 확인한다.
      * @param memberDTO
      *      MemberDTO
      * @return
-     *      Validate result
+     *      확인결과
      */
     boolean checkLogin(MemberDTO memberDTO);
 
     /**
-     * Check email duplicate for registration.
+     * 회원가입에 필요한 이메일의 중복여부를 확인한다.
      * @param memberDTO
-     *      Member email
+     *      MemberDTO
      * @return
-     *      Validate result
+     *      중복여부
      */
     boolean checkRegister(MemberDTO memberDTO);
 
     /**
-     * Convert MemberDTO to Member.
-     * @param memberDTO
-     *      MemberDTO
+     * 이메일과 일치하는 회원 엔티티를 반환한다.
+     * @param email
+     *      회원 이메일
      * @return
-     *      Member
+     *      MemberEntity
      */
-    default Member dtoToEntity(MemberDTO memberDTO) {
-        return Member.builder()
-                .email(memberDTO.getEmail())
-                .password(memberDTO.getPassword())
-                .phone(memberDTO.getPhone()).build();
-    }
-
-    /**
-     * Convert Member to MemberDTO.
-     * @param member
-     *      Member
-     * @return
-     *      MemberDTO
-     */
-    default MemberDTO entityToDTO(Member member) {
-        return MemberDTO.builder()
-                .id(member.getId())
-                .email(member.getEmail())
-                .password(member.getPassword())
-                .phone(member.getPhone()).build();
-    }
+    MemberEntity getMemberByEmail(String email);
 }

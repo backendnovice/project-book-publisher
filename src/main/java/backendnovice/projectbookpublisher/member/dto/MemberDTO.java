@@ -1,11 +1,10 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-06-30
- * @desc : Member data transfer object.
- *
- * changelog :
- * 2023-06-30 - backendnovice@gmail.com - Apply springdoc swagger annotations
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 회원 관련 데이터 전달 객체 클래스.
+ * @changelog :
+ * 23-07-19 - backendnovice@gmail.com - Springdoc swagger 주석 적용
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.member.dto;
@@ -22,15 +21,15 @@ import lombok.NoArgsConstructor;
 @Data
 @Schema(name = "Member DTO")
 public class MemberDTO {
-    @Schema(description = "Member ID. (PK)")
+    @Schema(description = "회원 ID (PK)")
     private Long id;
 
-    @Schema(description = "Member email address.")
+    @Schema(description = "회원 이메일")
     private String email;
 
-    @Schema(description = "Member password.")
+    @Schema(description = "회원 비밀번호")
     private String password;
 
-    @Schema(description = "Member phone number.")
+    @Schema(description = "회원 전화번호")
     private String phone;
 }

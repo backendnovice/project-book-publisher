@@ -1,16 +1,13 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-10
- * @desc : Maps member-related pages and processes requests.
- *
- * changelog :
- * 2023-06-29 - backendnovice@gmail.com - Split from MemberController.java
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
- * 2023-07-04 - backendnovice@gmail.com - Add error, profiles mapping method
- * 2023-07-04 - backendnovice@gmail.com - Add member registration handle method
- * 2023-07-05 - backendnovice@gmail.com - Add change password handle method
- * 2023-07-09 - backendnovice@gmail.com - Add email verify handle method
- * 2023-07-10 - backendnovice@gmail.com - Add email resend handle method
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 회원과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
+ * @changelog :
+ * 23-06-29 - backendnovice@gmail.com - MemberController 에서 분리
+ * 23-07-04 - backendnovice@gmail.com - 프로필, 로그인 에러 요청 핸들링 메소드 추가
+ * 23-07-04 - backendnovice@gmail.com - 회원가입 요청 핸들링 메소드 추가
+ * 23-07-05 - backendnovice@gmail.com - 비밀번호 변경 핸들링 메소드 추가
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.member.controller;
@@ -34,9 +31,9 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping login page.
+     * "/member/login"에 대한 GET 요청을 처리하고, 로그인 뷰를 반환한다.
      * @return
-     *      Login URI
+     *      로그인 뷰
      */
     @GetMapping("/login")
     public String getLoginPage() {
@@ -44,9 +41,9 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping registration page.
+     * "/member/register"에 대한 GET 요청을 처리하고, 회원가입 뷰를 반환한다.
      * @return
-     *      Registration URI
+     *      회원가입 뷰
      */
     @GetMapping("/register")
     public String getRegisterPage() {
@@ -54,9 +51,9 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping profiles page.
+     * "/member/profiles"에 대한 GET 요청을 처리하고, 프로필 뷰를 반환한다.
      * @return
-     *      Profiles URI
+     *      프로필 뷰
      */
     @GetMapping("/profiles")
     public String getProfilesPage() {
@@ -64,9 +61,9 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping login-error page.
+     * "/member/failure"에 대한 GET 요청을 처리하고, 로그인 에러 뷰를 반환한다.
      * @return
-     *      Login-error URI
+     *      로그인 에러 뷰
      */
     @GetMapping("/failure")
     public String getFailurePage() {
@@ -74,9 +71,9 @@ public class MemberViewController {
     }
 
     /**
-     * Mapping change-password page.
+     * "/member/support/change-password"에 대한 GET 요청을 처리하고, 비밀번호 변경 뷰를 반환한다.
      * @return
-     *      Change-password URI
+     *      비밀번호 변경 뷰
      */
     @GetMapping("/support/change-password")
     public String getChangePasswordPage() {
@@ -84,11 +81,11 @@ public class MemberViewController {
     }
 
     /**
-     * Handle member registration service.
+     * "/member/register"에 대한 POST 요청을 처리하고, 회원 등록 서비스를 호출한다.
      * @param memberDTO
      *      MemberDTO
      * @return
-     *      Redirect URI (login | register)
+     *      결과 뷰 (로그인 | 회원가입)
      */
     @PostMapping("/register")
     public String registerProcess(MemberDTO memberDTO) {
@@ -97,35 +94,36 @@ public class MemberViewController {
     }
 
     /**
-     * Handle member withdraw service.
+     * "/member/withdraw"에 대한 POST 요청을 처리하고, 회원 탈퇴 서비스를 호출한다.
      * @param principal
-     *      Logged in member
+     *      로그인 회원 객체
      * @return
-     *      Redirect URI (logout | profiles)
+     *      결과 뷰 (로그아웃 | 프로필)
      */
     @PostMapping("/withdraw")
     public String withdrawProcess(Principal principal) {
         String email = principal.getName();
-        memberService.withdraw(email);
+        if(memberService.withdraw(email)) {
+            return "redirect:/member/logout";
+        }
 
-        return "redirect:/member/logout";
+        return "redirect:/member/profiles";
     }
 
     /**
-     * Handle change password service.
+     * "/member/support/change-password"에 대한 POST 요청을 처리하고, 비밀번호 변경 서비스를 호출한다.
      * @param principal
-     *      Logged in member
+     *      로그인 회원 객체
      * @param memberDTO
      *      MemberDTO
      * @return
-     *      Redirect logout URI
+     *      로그아웃 뷰
      */
     @PostMapping("/support/change-password")
     public String changePasswordProcess(Principal principal, MemberDTO memberDTO) {
-        String email = principal.getName();
-        String password = memberDTO.getPassword();
+        memberDTO.setEmail(principal.getName());
 
-        memberService.changePassword(email, password);
+        memberService.changePassword(memberDTO);
 
         return "redirect:/member/logout";
     }

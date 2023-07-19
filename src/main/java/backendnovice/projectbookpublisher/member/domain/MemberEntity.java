@@ -1,21 +1,20 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-10
- * @desc : Match 'member' table in DB.
- *
- * changelog :
- * 2023-06-29 - backendnovice@gmail.com - Remove @Setter annotation
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
- * 2023-07-04 - backendnovice@gmail.com - Temporarily fixed role with 'USER'
- * 2023-07-09 - backendnovice@gmail.com - Add enabled column
- * 2023-07-10 - backendnovice@gmail.com - Map EmailCode relationship
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : Member 테이블 엔티티 클래스.
+ * @changelog :
+ * 23-06-29 - backendnovice@gmail.com - @Setter 어노테이션 제거
+ * 23-07-04 - backendnovice@gmail.com - Role을 임시로 USER로 고정
+ * 23-07-09 - backendnovice@gmail.com - enabled 필드 추가
+ * 23-07-10 - backendnovice@gmail.com - EmailCode 관계 필드 추가
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.member.domain;
 
-import backendnovice.projectbookpublisher.book.domain.Book;
-import backendnovice.projectbookpublisher.email.domain.EmailCode;
-import backendnovice.projectbookpublisher.common.domain.Times;
+import backendnovice.projectbookpublisher.book.domain.BookEntity;
+import backendnovice.projectbookpublisher.email.domain.EmailCodeEntity;
+import backendnovice.projectbookpublisher.common.domain.TimeEntity;
 import backendnovice.projectbookpublisher.member.vo.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +27,7 @@ import java.util.List;
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends Times {
+public class MemberEntity extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -51,13 +50,13 @@ public class Member extends Times {
     private boolean enabled = false;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<EmailCode> emailCodes = new ArrayList<>();
+    private List<EmailCodeEntity> emailCodeEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<Book> books = new ArrayList<>();
+    private List<BookEntity> bookEntities = new ArrayList<>();
 
     @Builder
-    public Member(String email, String password, String phone, boolean enabled) {
+    public MemberEntity(String email, String password, String phone, boolean enabled) {
         this.email = email;
         this.password = password;
         this.phone = phone;
@@ -65,36 +64,36 @@ public class Member extends Times {
     }
 
     /**
-     * Set email with parameter.
+     * BookEntity의 email을 파라미터값으로 대체한다.
      * @param email
-     *      email
+     *      회원 이메일
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * Set password with parameter.
+     * BookEntity의 password을 파라미터값으로 대체한다.
      * @param password
-     *      password
+     *      회원 비밀번호
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
-     * Set phone with parameter.
+     * BookEntity의 phone을 파라미터값으로 대체한다.
      * @param phone
-     *      phone
+     *      회원 전화번호
      */
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
     /**
-     * Set email verification with parameter.
+     * BookEntity의 enabled를 파라미터값으로 대체한다.
      * @param enabled
-     *      email verification
+     *      회원 인증여부
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;

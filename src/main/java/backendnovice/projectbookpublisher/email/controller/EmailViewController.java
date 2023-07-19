@@ -1,10 +1,10 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-12
- * @desc : Maps email-related pages and processes requests.
- *
- * changelog :
- * 2023-07-12 - backendnovice@gmail.com - Split from MemberViewController.java
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 메일과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
+ * @changelog :
+ * 23-07-12 - backendnovice@gmail.com - MemberViewController 에서 분리
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 및 수정
  */
 
 package backendnovice.projectbookpublisher.email.controller;
@@ -28,9 +28,9 @@ public class EmailViewController {
     }
 
     /**
-     * Mapping email-verify page.
+     * "/email/verify"에 대한 GET 요청을 받아 인증 서비스를 호출하고, 메일 인증 결과 뷰를 반환한다.
      * @return
-     *      Email-verify URI
+     *      메일 인증 결과 뷰
      */
     @GetMapping("/verify")
     public String getVerifyPage(@RequestParam String value, @RequestParam String type) {
@@ -39,9 +39,9 @@ public class EmailViewController {
     }
 
     /**
-     * Mapping email-resend page.
+     * "/email/verify/resend"에 대한 GET 요청을 처리하고, 메일 재전송 뷰를 반환한다.
      * @return
-     *      Email-resend URI
+     *      메일 재전송 뷰
      */
     @GetMapping("/verify/resend")
     public String getResendPage() {
@@ -49,11 +49,11 @@ public class EmailViewController {
     }
 
     /**
-     * Handle email resend service.
+     * "/email/verify/resend"에 대한 POST 요청을 받아 재전송 서비스를 호출하고, 메일 전송 결과 뷰를 반환한다.
      * @param memberDTO
      *      MemberDTO
      * @return
-     *      Login URI
+     *      메일 재전송 결과 뷰
      */
     @PostMapping("/verify/resend")
     public String resendProcess(MemberDTO memberDTO) {

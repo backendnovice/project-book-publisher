@@ -1,11 +1,10 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-15
- * @desc : Automatically injects create, modify date.
- *
- * changelog :
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
- * 2023-07-15 - backendnovice@gmail.com - Rename to 'Times.class'
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 테이블 공통 엔티티 클래스.
+ * @changelog :
+ * 23-07-19 - backendnovice@gmail.com - 클래스명 변경 (Time -> TimeEntity)
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.common.domain;
@@ -23,7 +22,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class Times {
+public class TimeEntity {
     @CreatedDate
     @Column(name = "date_create", updatable = false)
     private LocalDateTime dateCreate;

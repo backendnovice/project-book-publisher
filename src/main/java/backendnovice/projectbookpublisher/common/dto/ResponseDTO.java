@@ -1,9 +1,9 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-11
- * @desc : Common response data transfer object.
- *
- * changelog :
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 공통 응답 데이터 전달 객체 클래스.
+ * @changelog :
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.common.dto;
@@ -17,38 +17,38 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Schema(name = "Common response DTO")
 public class ResponseDTO<T> {
-    @Schema(description = "HTTP status code.")
+    @Schema(description = "HTTP 상태 코드")
     private int code;
 
-    @Schema(description = "HTTP message.")
+    @Schema(description = "HTTP 응답 메시지")
     private String message;
 
-    @Schema(description = "Response generic data.")
+    @Schema(description = "응답 데이터")
     private T data;
 
     /**
-     * Respond code(200), message, data together when successful.
+     * 데이터를 포함하는 API 의 정상적인 응답을 생성하고 반환한다.
      * @param message
-     *     Response message
+     *     응답 메시지
      * @param data
-     *     Response data
+     *     응답 데이터
      * @return
-     *     Response DTO
+     *     ResponseDTO
      * @param <T>
-     *     Generic type
+     *     제네릭 타입
      */
     public static <T> ResponseDTO<T> onSuccess(String message, T data) {
         return new ResponseDTO<>(HttpStatus.OK.value(), message, data);
     }
 
     /**
-     * Respond code(404), message together when unsuccessful.
+     * 데이터를 포함하지 않는 API 의 비정상적인 응답을 생성하고 반환한다.
      * @param message
-     *     Response message
+     *     응답 메시지
      * @return
-     *     Response DTO
+     *     ResponseDTO
      * @param <T>
-     *     Generic type
+     *     제네릭 타입
      */
     public static <T> ResponseDTO<T> onFailure(String message) {
         return new ResponseDTO<>(HttpStatus.NOT_FOUND.value(), message, null);

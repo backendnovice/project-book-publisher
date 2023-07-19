@@ -1,17 +1,16 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-06-30
- * @desc : Handles member-related requests and responses.
- *
- * changelog :
- * 2023-06-29 - backendnovice@gmail.com - Split from MemberController.java
- * 2023-06-30 - backendnovice@gmail.com - Apply springdoc swagger annotations
- * 2023-06-30 - backendnovice@gmail.com - Modify coding annotations
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : 회원과 관련된 REST 요청을 처리하는 컨트롤러 클래스.
+ * @changelog :
+ * 23-06-29 - backendnovice@gmail.com - MemberController 에서 분리
+ * 23-06-30 - backendnovice@gmail.com - Springdoc Swagger 주석 적용
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.member.controller;
 
-import backendnovice.projectbookpublisher.global.dto.ResponseDTO;
+import backendnovice.projectbookpublisher.common.dto.ResponseDTO;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,42 +33,42 @@ public class MemberApiController {
     }
 
     /**
-     * Check email, password used for login.
+     * 로그인에 필요한 이메일과 비밀번호를 검사한다.
      * @param memberDTO
-     *      MemberDTO with email, password
+     *      MemberDTO
      * @return
      *      ResponseDTO
      */
     @PostMapping("/login")
-    @Operation(summary = "Login API", description = "Check email, password matches from DB.")
+    @Operation(summary = "Member Login API", description = "이메일과 비밀번호가 일치하는 튜플이 있는지 검사한다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "A matching tuple exists in DB."),
-            @ApiResponse(responseCode = "404", description = "A matching tuple doesn't exists in DB.")
+            @ApiResponse(responseCode = "200", description = "DB에 일치하는 회원이 존재한다."),
+            @ApiResponse(responseCode = "404", description = "DB에 일치하지 않는 회원이 존재한다.")
     })
-    public ResponseDTO<String> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
+    public ResponseDTO<?> provideLoginAPI(@RequestBody MemberDTO memberDTO) {
         if(memberService.checkLogin(memberDTO)) {
-            return ResponseDTO.onSuccess("Correct email and password", null);
+            return ResponseDTO.onSuccess("올바른 이메일과 비밀번호입니다.", null);
         }
-        return ResponseDTO.onFailure("Incorrect email and password");
+        return ResponseDTO.onFailure("이메일, 비밀번호가 일치하지 않습니다.");
     }
 
     /**
-     * Check email used for registration.
+     * 회원가입에 필요한 이메일을 검사한다.
      * @param memberDTO
-     *      MemberDTO with email
+     *      MemberDTO
      * @return
-     *      ResponseEntity containing existence
+     *      ResponseDTO
      */
     @PostMapping("/register")
-    @Operation(summary = "Registration API", description = "Email duplicate check from DB.")
+    @Operation(summary = "Member Registration API", description = "이메일과 일치하는 튜플이 있는지 검사한다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "A matching tuple doesn't exists in DB."),
-            @ApiResponse(responseCode = "404", description = "A matching tuple exists in DB.")
+            @ApiResponse(responseCode = "200", description = "DB에 일치하는 이메일이 존재하지 않다."),
+            @ApiResponse(responseCode = "404", description = "DB에 일치하는 이메일이 존재한다.")
     })
-    public ResponseDTO<String> provideRegisterAPI(@RequestBody MemberDTO memberDTO) {
+    public ResponseDTO<?> provideRegisterAPI(@RequestBody MemberDTO memberDTO) {
         if(memberService.checkRegister(memberDTO)) {
-            return ResponseDTO.onSuccess("Email is available", null);
+            return ResponseDTO.onSuccess("이메일을 사용할 수 있습니다.", null);
         }
-        return ResponseDTO.onFailure("Email is not available.");
+        return ResponseDTO.onFailure("이메일을 사용할 수 없습니다.");
     }
 }

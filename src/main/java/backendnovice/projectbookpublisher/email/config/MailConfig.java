@@ -1,10 +1,10 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-07-10
- * @desc : Configure Spring Boot Starter Mail.
- *
- * changelog :
- * 2023-07-10 - backendnovice@gmail.com - Modify JavaMailSender()
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : Spring Boot Starter Mail 을 설정하는 클래스.
+ * @changelog :
+ * 23-07-10 - backendnovice@gmail.com - JavaMailSender 설정 주입
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 및 수정
  */
 
 package backendnovice.projectbookpublisher.email.config;

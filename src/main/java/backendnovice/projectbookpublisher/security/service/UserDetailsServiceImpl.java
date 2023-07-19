@@ -1,14 +1,14 @@
 /**
- * @author : backendnovice@gmail.com
- * @date : 2023-06-30
- * @desc : Customize UserDetailsService for authentication.
- *
- * changelog :
+ * @author    : backendnovice@gmail.com
+ * @date      : 2023-07-19
+ * @desc      : UserDetailsService를 구현하는 클래스.
+ * @changelog :
+ * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  */
 
 package backendnovice.projectbookpublisher.security.service;
 
-import backendnovice.projectbookpublisher.member.domain.Member;
+import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
 import backendnovice.projectbookpublisher.security.domain.UserDetailsImpl;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,9 +26,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email)
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid Member Email: " + email));
 
-        return new UserDetailsImpl(member);
+        return new UserDetailsImpl(memberEntity);
     }
 }

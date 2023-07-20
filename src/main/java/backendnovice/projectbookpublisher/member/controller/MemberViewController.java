@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-20
  * @desc      : 회원과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
  * @changelog :
  * 23-06-29 - backendnovice@gmail.com - MemberController 에서 분리
@@ -8,6 +8,7 @@
  * 23-07-04 - backendnovice@gmail.com - 회원가입 요청 핸들링 메소드 추가
  * 23-07-05 - backendnovice@gmail.com - 비밀번호 변경 핸들링 메소드 추가
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-20 - backendnovice@gmail.com - 회원탈퇴 핸들링 메소드 수정
  */
 
 package backendnovice.projectbookpublisher.member.controller;
@@ -98,16 +99,15 @@ public class MemberViewController {
      * @param principal
      *      로그인 회원 객체
      * @return
-     *      결과 뷰 (로그아웃 | 프로필)
+     *      로그아웃 뷰
      */
     @PostMapping("/withdraw")
     public String withdrawProcess(Principal principal) {
-        String email = principal.getName();
-        if(memberService.withdraw(email)) {
-            return "redirect:/member/logout";
-        }
+        MemberDTO memberDTO = MemberDTO.builder().email(principal.getName()).build();
 
-        return "redirect:/member/profiles";
+        memberService.withdraw(memberDTO);
+
+        return "redirect:/member/logout";
     }
 
     /**

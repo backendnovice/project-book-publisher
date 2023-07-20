@@ -1,10 +1,11 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-20
  * @desc      : Member 테이블 입출력을 담당하는 레포지토리 인터페이스.
  * @changelog :
- * 23-07-04 - backendnovice@gmail.com - 회원 탈퇴 쿼리 메소드 추가
+ * 23-07-04 - backendnovice@gmail.com - 회원탈퇴 쿼리 메소드 추가
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-20 - backendnovice@gmail.com - 회원삭제 쿼리 메소드 리턴 수정
  **/
 
 package backendnovice.projectbookpublisher.member.repository;
@@ -43,5 +44,5 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
      * @return
      *      삭제 횟수
      */
-    Long deleteByEmail(@Param("member_email") String email);
+    Optional<MemberEntity> deleteByEmail(@Param("member_email") String email);
 }

@@ -1,12 +1,13 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-20
  * @desc      : 회원과 관련된 서비스 메소드를 구현하는 클래스.
  * @changelog :
  * 23-06-29 - backendnovice@gmail.com - 회원가입 반환 타입 변경 (String -> boolean)
  * 23-07-04 - backendnovice@gmail.com - 회원탈퇴 메소드 구현
  * 23-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-20 - backendnovice@gmail.com - 코드 리팩토링 수행
  */
 
 package backendnovice.projectbookpublisher.member.service;
@@ -15,13 +16,15 @@ import backendnovice.projectbookpublisher.email.service.EmailService;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
-import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
@@ -36,14 +39,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public boolean register(MemberDTO memberDTO) {
-        String email = memberDTO.getEmail();
-        String password = memberDTO.getPassword();
+        // 패스워드가 패턴에 일치할 경우, 순서대로 암호화 -> DB 저장 -> 메일 전송을 수행한다.
+        if (checkPasswordPattern(memberDTO)) {
+            memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
 
-        if (checkPasswordPattern(password)) {
-            memberDTO.setPassword(passwordEncoder.encode(password));
             memberRepository.save(convertToEntity(memberDTO));
-            emailService.sendVerifyEmail(email);
+
+            emailService.sendVerifyEmail(memberDTO.getEmail());
 
             return true;
         }
@@ -53,27 +57,41 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public boolean withdraw(String email) {
-        // If removed columns count greater than 0, return true.
-        return memberRepository.deleteByEmail(email) > 0;
+    public void withdraw(MemberDTO memberDTO) {
+        try {
+            memberRepository.deleteByEmail(memberDTO.getEmail()).orElseThrow(NoSuchElementException::new);
+        }catch (NoSuchElementException e) {
+            log.error("존재하지 않는 이메일입니다: {}", memberDTO.getEmail());
+        }
     }
 
     @Override
+    @Transactional
     public void changePassword(MemberDTO memberDTO) {
-        MemberEntity memberEntity = memberRepository.findByEmail(memberDTO.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Member Email"));
+        try {
+            MemberEntity member = getMemberByEmail(memberDTO);
 
-        memberEntity.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+            member.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
 
-        memberRepository.save(memberEntity);
+            memberRepository.save(member);
+        }catch(NullPointerException e) {
+            log.error("비밀번호가 null 값을 가집니다: {}", memberDTO.getPassword());
+        }
     }
 
     @Override
     public boolean checkLogin(MemberDTO memberDTO) {
-        Optional<MemberEntity> member = memberRepository.findByEmail(memberDTO.getEmail());
+        MemberEntity member = getMemberByEmail(memberDTO);
 
-        return member.filter(memberEntity -> passwordEncoder
-                        .matches(memberDTO.getPassword(), memberEntity.getPassword())).isPresent();
+        try {
+            boolean isCorrect = passwordEncoder.matches(memberDTO.getPassword(), member.getPassword());
+
+            return isCorrect;
+        }catch (NullPointerException e) {
+            log.error("비밀번호가 null 값을 가집니다: {}", member.getPassword());
+
+            return false;
+        }
     }
 
     @Override
@@ -82,29 +100,48 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberEntity getMemberByEmail(String email) {
-        Optional<MemberEntity> member = memberRepository.findByEmail(email);
+    public MemberEntity getMemberByEmail(MemberDTO memberDTO) {
+        try {
+            MemberEntity member = memberRepository.findByEmail(memberDTO.getEmail())
+                    .orElseThrow(NoSuchElementException::new);
 
-        if(member.isPresent()) {
-            return member.get();
-        }else {
-            throw new IllegalArgumentException("There is no Member with ID.");
+            return member;
+        }catch(NoSuchElementException e) {
+            log.error("존재하지 않는 이메일입니다: {}", memberDTO.getEmail());
+
+            return null;
         }
     }
 
     /**
      * 비밀번호 조건을 검사한다.
-     * @param password
-     *      회원 비밀번호
+     * @param memberDTO
+     *      MemberDTO
      * @return
      *      검사 결과
      */
-    private boolean checkPasswordPattern(String password) {
-        // 최소 8자의 비밀번호. 대소문자, 특수문자를 하나씩 포함하여야 함.
+    private boolean checkPasswordPattern(MemberDTO memberDTO) {
+        String password = memberDTO.getPassword();
+
+        // 비밀번호는 8 자리 이상의 최소 하나의 대소문자, 특수문자를 포함하는 문자열이여야 한다.
         Pattern pattern = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
+
         Matcher matcher = pattern.matcher(password);
 
-        return matcher.find();
+        boolean isCorrect = matcher.find();
+
+        try {
+            if(password == null || password.isEmpty()) {
+                throw new IllegalArgumentException("비밀번호가 null 값을 가지거나 비어있습니다.");
+            }
+            if(!isCorrect) {
+                throw new IllegalArgumentException("비밀번호가 패턴과 일치하지 않습니다");
+            }
+        }catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+
+        return isCorrect;
     }
 
     /**

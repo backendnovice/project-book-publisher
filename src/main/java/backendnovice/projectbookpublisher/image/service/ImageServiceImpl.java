@@ -1,12 +1,13 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : 이미지와 관련된 서비스 메소드를 구현하는 클래스.
  * @changelog :
  * 23-07-15 - backendnovice@gmail.com - 이미지 저장 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 이미지명 반환 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 엔티티 <-> DTO 변환 메소드 추가
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-21 - backendnovice@gmail.com - 예외 처리 및 변환 메소드 수정
  */
 
 package backendnovice.projectbookpublisher.image.service;
@@ -14,15 +15,17 @@ package backendnovice.projectbookpublisher.image.service;
 import backendnovice.projectbookpublisher.image.domain.ImageEntity;
 import backendnovice.projectbookpublisher.image.dto.ImageDTO;
 import backendnovice.projectbookpublisher.image.repository.ImageRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ImageServiceImpl implements ImageService{
     private final ImageRepository imageRepository;
@@ -32,50 +35,54 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Value("${image.upload.directory}")
-    private String filepath;
+    private String path;
 
     @Override
+    @Transactional
     public ImageEntity saveImageToFile(MultipartFile image) {
-        try {
-            String uuid = UUID.randomUUID().toString();
-            String ext = ".png";
+        String uuid = UUID.randomUUID().toString();
+        String ext = ".png";
 
-            File file = new File(filepath + uuid + ext);
+        ImageDTO imageDTO = ImageDTO.builder()
+                .uuid(uuid)
+                .ext(ext)
+                .path(path)
+                .build();
+
+        try {
+            File file = new File(path + uuid + ext);
+
             image.transferTo(file);
 
-            return saveImageToDB(uuid, ext);
+            return saveImageToDB(imageDTO);
         }catch(IOException e) {
-            throw new RuntimeException("Failed to upload image.");
+            log.error("이미지 업로드에 실패했습니다: {}", imageDTO);
+
+            return null;
         }
     }
 
     @Override
-    public String getImageFullName(Long id) {
-        Optional<ImageEntity> image = imageRepository.findById(id);
+    public String getFullNameById(ImageDTO imageDTO) {
+        try {
+            ImageEntity image = imageRepository.findById(imageDTO.getId())
+                    .orElseThrow(NoSuchElementException::new);
 
-        if(image.isPresent()) {
-            ImageEntity _imageEntity = image.get();
-            return _imageEntity.getUuid() + _imageEntity.getExt();
-        }else {
-            throw new IllegalArgumentException("There is no ID in Image table.");
+            return image.getUuid() + image.getExt();
+        }catch (NoSuchElementException e) {
+            log.error("ID와 일치하는 이미지가 존재하지 않습니다 : {}", imageDTO.getId());
+
+            return null;
         }
     }
 
     /**
      * 이미지 정보를 DB에 저장한다.
-     * @param uuid
-     *      이미지 UUID
-     * @param ext
-     *      이미지 확장자
+     * @param image
+     *      ImageDTO
      */
-    private ImageEntity saveImageToDB(String uuid, String ext) {
-        ImageEntity imageEntity = ImageEntity.builder()
-                .uuid(uuid)
-                .ext(ext)
-                .path(filepath)
-                .build();
-
-        return imageRepository.save(imageEntity);
+    private ImageEntity saveImageToDB(ImageDTO image) {
+        return imageRepository.save(convertToEntity(image));
     }
 
     /**
@@ -95,16 +102,17 @@ public class ImageServiceImpl implements ImageService{
 
     /**
      * ImageEntity를 ImageDTO로 변환한다.
-     * @param imageEntity
+     * @param image
      *      ImageEntity
      * @return
      *      ImageDTO
      */
-    private ImageDTO convertToDto(ImageEntity imageEntity) {
+    private ImageDTO convertToDto(ImageEntity image) {
         return ImageDTO.builder()
-                .uuid(imageEntity.getUuid())
-                .ext(imageEntity.getExt())
-                .path(imageEntity.getPath())
+                .id(image.getId())
+                .uuid(image.getUuid())
+                .ext(image.getExt())
+                .path(image.getPath())
                 .build();
     }
 }

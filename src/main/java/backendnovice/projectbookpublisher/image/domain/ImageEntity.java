@@ -1,10 +1,11 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : Image 테이블 엔티티 클래스.
  * @changelog :
  * 23-07-19 - backendnovice@gmail.com - 클래스명 변경 (Image -> ImageEntity), 필드명 변경 (extension -> ext)
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-21 - backendnovice@gmail.com - 필드명 수정
  */
 
 package backendnovice.projectbookpublisher.image.domain;
@@ -36,7 +37,7 @@ public class ImageEntity extends TimeEntity {
     private String path;
 
     @OneToOne(mappedBy = "image")
-    private BookEntity bookEntity;
+    private BookEntity book;
 
     @Builder
     public ImageEntity(String uuid, String ext, String path) {

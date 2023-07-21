@@ -1,10 +1,11 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : Book 테이블 엔티티 클래스.
  * @changelog :
  * 23-07-19 - backendnovice@gmail.com - 클래스명 변경 (Book -> BookEntity), 필드명 변경 (content -> description)
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-21 - backendnovice@gmail.com - 필드명 수정 (imageEntity -> image, memberEntity -> member)
  */
 
 package backendnovice.projectbookpublisher.book.domain;
@@ -49,41 +50,41 @@ public class BookEntity extends TimeEntity {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
-    private ImageEntity imageEntity;
+    private ImageEntity image;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity memberEntity;
+    private MemberEntity member;
 
     @Builder
     public BookEntity(String title, String author, String description, BookType type, LocalDate datePublish
-            , boolean permitted, ImageEntity imageEntity, MemberEntity memberEntity) {
+            , boolean permitted, ImageEntity image, MemberEntity member) {
         this.title = title;
         this.author = author;
         this.description = description;
         this.type = type;
         this.datePublish = datePublish;
         this.permitted = permitted;
-        this.imageEntity = imageEntity;
-        this.memberEntity = memberEntity;
+        this.image = image;
+        this.member = member;
     }
 
     /**
      * BookEntity의 ImageEntity를 파라미터로 설정한다.
-     * @param imageEntity
+     * @param image
      *      ImageEntity
      */
-    public void setImageEntity(ImageEntity imageEntity) {
-        this.imageEntity = imageEntity;
+    public void setImageEntity(ImageEntity image) {
+        this.image = image;
     }
 
     /**
      * BookEntity의 MemberEntity를 파라미터로 설정한다.
-     * @param memberEntity
+     * @param member
      *      MemberEntity
      */
-    public void setMemberEntity(MemberEntity memberEntity) {
-        this.memberEntity = memberEntity;
+    public void setMemberEntity(MemberEntity member) {
+        this.member = member;
     }
 
     /**

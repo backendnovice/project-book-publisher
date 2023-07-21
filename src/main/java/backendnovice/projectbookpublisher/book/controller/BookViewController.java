@@ -1,12 +1,13 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : 책과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
  * @changelog :
  * 23-07-15 - backendnovice@gmail.com - 책 등록 요청 핸들링 메소드 추가
  * 23-07-16 - backendnovice@gmail.com - 책 조회 요청 핸들링 메소드 추가
  * 23-07-18 - backendnovice@gmail.com - 책 목록 요청 핸들링 메소드 추가
  * 23-07-19 - backendnovice@gmail.com - 관심사 분리 및 주석 한글화 수정
+ * 23-07-21 - backendnovice@gmail.com - 책 목록 요청 핸들링 메소드 수정
  */
 
 package backendnovice.projectbookpublisher.book.controller;
@@ -15,6 +16,7 @@ import backendnovice.projectbookpublisher.book.domain.BookEntity;
 import backendnovice.projectbookpublisher.book.dto.BookDTO;
 import backendnovice.projectbookpublisher.book.service.BookService;
 import backendnovice.projectbookpublisher.common.dto.PaginationDTO;
+import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,9 +49,9 @@ public class BookViewController {
     /**
      * "/books/list"에 대한 GET 요청을 처리하고, 책 목록 뷰를 반환한다.
      * @param model
-     *      뷰 전달 데이터 객체
+     *      Model 객체
      * @param pageable
-     *      페이지 데이터 객체
+     *      Pageable 객체
      * @return
      *      책 목록 뷰
      */
@@ -69,31 +71,18 @@ public class BookViewController {
     /**
      * "/books/list"에 대한 GET 요청을 처리하고, 검색 옵션이 적용된 책 목록 뷰를 반환한다.
      * @param bookDTO
-     *      검색 옵션 전달 객체
+     *      BookDTO 객체
      * @param model
-     *      뷰 전달 데이터 객체
+     *      Model 객체
      * @param pageable
-     *      페이지 데이터 객체
+     *      Pageable 객체
      * @return
      *      책 목록 뷰
      */
     @GetMapping("/list")
     public String getListPageWithOption(BookDTO bookDTO, Model model,
             @PageableDefault(page = 0, size = 10, sort = "book_id", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<BookEntity> books = null;
-
-        if(bookDTO.getTitle() != null) {
-            books = bookService.searchBooksByTitle(bookDTO.getTitle());
-        }
-        if(bookDTO.getDescription() != null) {
-            books = bookService.searchBooksByContent(bookDTO.getDescription());
-        }
-        if(bookDTO.getAuthor() != null) {
-            books = bookService.searchBooksByAuthor(bookDTO.getAuthor());
-        }
-        if(bookDTO.getType() != null) {
-            books = bookService.searchBooksByType(bookDTO.getType());
-        }
+        Page<BookEntity> books = bookService.searchBooksByAttribute(bookDTO, pageable);
 
         PaginationDTO paginationDTO = new PaginationDTO(books);
 
@@ -108,13 +97,15 @@ public class BookViewController {
      * @param id
      *      책 ID
      * @param model
-     *      뷰 전달 데이터 객체
+     *      Model 객체
      * @return
      *      책 조회 뷰
      */
     @GetMapping("/read/{id}")
     public String getReadPage(@PathVariable Long id, Model model) {
-        BookDTO bookDTO = bookService.getBookOne(id);
+        BookDTO bookDTO = BookDTO.builder().id(id).build();
+
+        bookDTO = bookService.getBookOne(bookDTO);
 
         model.addAttribute("book", bookDTO);
 
@@ -124,9 +115,9 @@ public class BookViewController {
     /**
      * "/book/register"에 대한 POST 요청을 처리하고, 책 등록 서비스를 호출한다.
      * @param bookDTO
-     *      책 데이터 전송 객체
+     *      BookDTO 객체
      * @param file
-     *      책 이미지 파일
+     *      MultipartFile 객체
      * @param principal
      *      로그인 회원 객체
      * @return
@@ -134,7 +125,11 @@ public class BookViewController {
      */
     @PostMapping("/register")
     public String registerProcess(BookDTO bookDTO, @RequestParam("image") MultipartFile file, Principal principal) {
-        bookService.register(principal.getName(), bookDTO, file);
+        MemberDTO memberDTO = MemberDTO.builder()
+                .email(principal.getName())
+                .build();
+
+        bookService.register(memberDTO, bookDTO, file);
 
         return "books/list";
     }

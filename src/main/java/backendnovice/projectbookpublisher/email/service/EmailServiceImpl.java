@@ -1,67 +1,91 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : 이메일과 관련된 서비스 메소드를 구현하는 클래스.
  * @changelog :
  * 23-07-16 - backendnovice@gmail.com - MemberServiceImpl 에서 분리
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-21 - backendnovice@gmail.com - 예외 처리 및 리팩토링 수행
  */
 
 package backendnovice.projectbookpublisher.email.service;
 
 import backendnovice.projectbookpublisher.email.domain.EmailCodeEntity;
+import backendnovice.projectbookpublisher.email.dto.EmailCodeDTO;
 import backendnovice.projectbookpublisher.email.repository.EmailCodeRepository;
 import backendnovice.projectbookpublisher.email.vo.CodeType;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
-import backendnovice.projectbookpublisher.member.repository.MemberRepository;
+import backendnovice.projectbookpublisher.member.dto.MemberDTO;
+import backendnovice.projectbookpublisher.member.service.MemberService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import java.io.UnsupportedEncodingException;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
+import java.util.NoSuchElementException;
+
+@Slf4j
 @Service
 public class EmailServiceImpl implements EmailService {
-    private final MemberRepository memberRepository;
     private final EmailCodeRepository emailCodeRepository;
+    private final MemberService memberService;
     private final JavaMailSender javaMailSender;
 
-    public EmailServiceImpl(EmailCodeRepository emailCodeRepository, MemberRepository memberRepository
+    public EmailServiceImpl(EmailCodeRepository emailCodeRepository, MemberService memberService
             , JavaMailSender javaMailSender) {
         this.emailCodeRepository = emailCodeRepository;
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
         this.javaMailSender = javaMailSender;
     }
 
     @Override
+    @Transactional
     public void sendVerifyEmail(String email) {
         try {
             makeVerifyEmail(email);
-        }catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+        }catch (MessagingException e) {
+            log.error("메일 전송에서 예외가 발생했습니다.");
+        }catch (UnsupportedEncodingException e) {
+            log.error("인코딩 예외가 발생했습니다.");
         }
     }
 
     @Override
-    public boolean checkVerifyEmail(String key, CodeType type) {
-        EmailCodeEntity code = emailCodeRepository.findByKeyAndType(key, type)
-                .orElseThrow(IllegalArgumentException::new);
-        MemberEntity memberEntity = code.getMemberEntity();
+    @Transactional
+    public boolean checkVerifyEmail(EmailCodeDTO emailCodeDTO) {
+        try {
+            EmailCodeEntity emailCode = emailCodeRepository.findByKeyAndType(emailCodeDTO.getKey(), emailCodeDTO.getType())
+                    .orElseThrow(() -> new NoSuchElementException("키 또는 코드가 일치하지 않습니다"));
 
-        if(!code.isExpired()) {
-            code.setExpired(true);
-            emailCodeRepository.save(code);
-        }
+            if(emailCode.isExpired()) {
+                throw new IllegalArgumentException("이미 만료된 코드입니다");
+            }
 
-        if(!memberEntity.isEnabled()) {
-            memberEntity.setEnabled(true);
-            memberRepository.save(memberEntity);
+            if(emailCode.getMember().isEnabled()) {
+                emailCode.setExpired(true);
+
+                emailCodeRepository.save(emailCode);
+
+                throw new IllegalArgumentException("이미 활성화된 회원입니다");
+            }
+
+            emailCode.setExpired(true);
+
+            emailCode.getMember().setEnabled(true);
+
+            emailCodeRepository.save(emailCode);
+
             return true;
-        }
+        }catch (NoSuchElementException | IllegalArgumentException e) {
+            log.error(e.getMessage() + ": {}", emailCodeDTO);
 
-        return false;
+            return false;
+        }
     }
 
     /**
@@ -75,18 +99,20 @@ public class EmailServiceImpl implements EmailService {
      */
     private void makeVerifyEmail(String email)
             throws MessagingException, UnsupportedEncodingException {
-        EmailCodeEntity code = makeVerifyCode(email);
+        EmailCodeEntity code = saveCodeToDB(email);
+
         String to = email;
         String from = "backendnovice@gmail.com";
         String sender = "Book's Pub";
-        String title = "Please verify your Registration";
-        String content = "<h2>Welcome to Book's Publish Project</h2>"
-                + "<p>Please click the link below to complete Registration.</p>"
+        String title = "[Book's Pub] 이메일 인증을 완료해주세요.";
+        String content = "<h2>Book's Pub에 오신것을 환경합니다.</h2>"
+                + "<p>회원가입을 완료하려면 아래의 링크를 클릭해주세요.</p>"
                 + "<a href=\"" + "http://localhost:8080/email/verify?value=" + code.getKey() + "&type="
-                + code.getType() + "\" target=\"_blank\">Verify</a>"
-                + "<p>Thank you.<br>by" + sender + "</p>";
+                + code.getType() + "\" target=\"_blank\">이메일 인증 완료하기</a>"
+                + "<p>감사합니다.<br>by" + sender + "</p>";
 
         MimeMessage message = javaMailSender.createMimeMessage();
+
         MimeMessageHelper helper = new MimeMessageHelper(message);
 
         helper.setFrom(from, sender);
@@ -98,21 +124,24 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /**
-     * 무작위 인증 키를 생성한다.
+     * 인증 코드를 무작위로 생성하고 DB에 저장한다.
      * @return
-     *      이메일 키
+     *      회원 이메일
      */
-    private EmailCodeEntity makeVerifyCode(String email) {
-        String newCode = RandomStringUtils.randomAlphanumeric(64);
-        MemberEntity memberEntity = memberRepository.findByEmail(email)
-                .orElseThrow(IllegalArgumentException::new);
+    private EmailCodeEntity saveCodeToDB(String email) {
+        String key = RandomStringUtils.randomAlphanumeric(64);
 
-        EmailCodeEntity code = EmailCodeEntity.builder()
+        MemberEntity member = memberService.getMemberByEmail(MemberDTO.builder()
+                .email(email)
+                .build());
+
+        EmailCodeEntity emailCode = EmailCodeEntity.builder()
+                .key(key)
                 .type(CodeType.REGISTER)
-                .key(newCode)
+                .member(member)
                 .expired(false)
-                .memberEntity(memberEntity).build();
+                .build();
 
-        return emailCodeRepository.save(code);
+        return emailCodeRepository.save(emailCode);
     }
 }

@@ -1,11 +1,12 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-21
  * @desc      : EmailCode 테이블 엔티티 클래스.
  * @changelog :
  * 23-07-10 - backendnovice@gmail.com - 만료여부 필드 추가
  * 23-07-19 - backendnovice@gmail.com - 클래스명 변경 (EmailCode -> EmailCodeEntity)
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 및 수정
+ * 23-07-21 - backendnovice@gmail.com - 필드명 수정 (memberEntity -> member)
  */
 
 package backendnovice.projectbookpublisher.email.domain;
@@ -42,20 +43,20 @@ public class EmailCodeEntity extends TimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity memberEntity;
+    private MemberEntity member;
 
     @Builder
-    public EmailCodeEntity(String key, CodeType type, MemberEntity memberEntity, boolean expired) {
+    public EmailCodeEntity(String key, CodeType type, MemberEntity member, boolean expired) {
         this.key = key;
         this.type = type;
-        this.memberEntity = memberEntity;
+        this.member = member;
         this.expired = expired;
     }
 
     /**
      * EmailCodeEntity 의 인증코드 만료여부를 파라미터로 설정한다.
      * @param expired
-     *      인증코드 만료여부
+     *      만료여부
      */
     public void setExpired(boolean expired) {
         this.expired = expired;

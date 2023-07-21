@@ -22,9 +22,9 @@ public interface EmailCodeRepository extends JpaRepository<EmailCodeEntity, Long
     /**
      * 인증 키, 타입과 일치하는 튜플을 검색한다.
      * @param key
-     *      이메일 인증 키
+     *      인증 키
      * @param type
-     *      이메일 인증 타입
+     *      인증 타입
      * @return
      *      검색 결과
      */

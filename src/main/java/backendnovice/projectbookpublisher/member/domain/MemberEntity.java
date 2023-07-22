@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-19
+ * @date      : 2023-07-22
  * @desc      : Member 테이블 엔티티 클래스.
  * @changelog :
  * 23-06-29 - backendnovice@gmail.com - @Setter 어노테이션 제거
@@ -8,6 +8,8 @@
  * 23-07-09 - backendnovice@gmail.com - enabled 필드 추가
  * 23-07-10 - backendnovice@gmail.com - EmailCode 관계 필드 추가
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
+ * 23-07-22 - backendnovice@gmail.com - 잘못된 쿼리 메소드 호출 수정
+ * 23-07-22 - backendnovice@gmail.com - 필드명 수정 (bookEntities -> books, emailCodeEntities -> emailCodes)
  */
 
 package backendnovice.projectbookpublisher.member.domain;
@@ -50,10 +52,10 @@ public class MemberEntity extends TimeEntity {
     private boolean enabled = false;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<EmailCodeEntity> emailCodeEntities = new ArrayList<>();
+    private List<EmailCodeEntity> emailCodes = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<BookEntity> bookEntities = new ArrayList<>();
+    private List<BookEntity> books = new ArrayList<>();
 
     @Builder
     public MemberEntity(String email, String password, String phone, boolean enabled) {

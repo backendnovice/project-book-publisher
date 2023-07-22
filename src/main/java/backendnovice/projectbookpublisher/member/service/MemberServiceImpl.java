@@ -8,11 +8,11 @@
  * 23-07-05 - backendnovice@gmail.com - 비밀번호 변경 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  * 23-07-20 - backendnovice@gmail.com - 코드 리팩토링 수행
+ * 23-07-22 - backendnovice@gmail.com - 이메일 서비스 종속성 제거
  */
 
 package backendnovice.projectbookpublisher.member.service;
 
-import backendnovice.projectbookpublisher.email.service.EmailService;
 import backendnovice.projectbookpublisher.member.dto.MemberDTO;
 import backendnovice.projectbookpublisher.member.domain.MemberEntity;
 import backendnovice.projectbookpublisher.member.repository.MemberRepository;
@@ -29,13 +29,10 @@ import java.util.regex.Pattern;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
 
-    public MemberServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder
-            , EmailService emailService) {
+    public MemberServiceImpl(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
     }
 
     @Override
@@ -46,8 +43,6 @@ public class MemberServiceImpl implements MemberService {
             memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
 
             memberRepository.save(convertToEntity(memberDTO));
-
-            emailService.sendVerifyEmail(memberDTO.getEmail());
 
             return true;
         }

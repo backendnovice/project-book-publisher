@@ -1,12 +1,13 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-21
+ * @date      : 2023-07-22
  * @desc      : 책과 관련된 서비스 메소드를 구현하는 클래스.
  * @changelog :
  * 23-07-16 - backendnovice@gmail.com - 책 등록 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 책 검색 메소드 구현
  * 23-07-19 - backendnovice@gmail.com - 주석 한글화 수정
  * 23-07-21 - backendnovice@gmail.com - 잘못된 코드 수정 및 리팩토링 수행
+ * 23-07-22 - backendnovice@gmail.com - 잘못된 쿼리 메소드 호출 수정
  */
 
 package backendnovice.projectbookpublisher.book.service;
@@ -136,7 +137,7 @@ public class BookServiceImpl implements BookService {
      *      Page 객체
      */
     private Page<BookEntity> searchBooksByDesc(BookDTO bookDTO, Pageable pageable) {
-        return bookRepository.findAllByContentLikeIgnoreCase(bookDTO.getDescription(), pageable);
+        return bookRepository.findAllByDescriptionLikeIgnoreCase(bookDTO.getDescription(), pageable);
     }
 
     /**

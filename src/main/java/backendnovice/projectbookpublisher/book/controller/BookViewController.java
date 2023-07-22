@@ -1,6 +1,6 @@
 /**
  * @author    : backendnovice@gmail.com
- * @date      : 2023-07-21
+ * @date      : 2023-07-22
  * @desc      : 책과 관련된 POST, GET 요청을 처리하는 컨트롤러 클래스.
  * @changelog :
  * 23-07-15 - backendnovice@gmail.com - 책 등록 요청 핸들링 메소드 추가
@@ -8,6 +8,7 @@
  * 23-07-18 - backendnovice@gmail.com - 책 목록 요청 핸들링 메소드 추가
  * 23-07-19 - backendnovice@gmail.com - 관심사 분리 및 주석 한글화 수정
  * 23-07-21 - backendnovice@gmail.com - 책 목록 요청 핸들링 메소드 수정
+ * 23-07-22 - backendnovice@gmail.com - 목록 오버로딩 호출 이슈 픽스
  */
 
 package backendnovice.projectbookpublisher.book.controller;
@@ -79,7 +80,7 @@ public class BookViewController {
      * @return
      *      책 목록 뷰
      */
-    @GetMapping("/list")
+    @GetMapping("/list/search")
     public String getListPageWithOption(BookDTO bookDTO, Model model,
             @PageableDefault(page = 0, size = 10, sort = "book_id", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<BookEntity> books = bookService.searchBooksByAttribute(bookDTO, pageable);

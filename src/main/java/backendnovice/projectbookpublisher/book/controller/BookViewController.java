@@ -104,9 +104,7 @@ public class BookViewController {
      */
     @GetMapping("/read/{id}")
     public String getReadPage(@PathVariable Long id, Model model) {
-        BookDTO bookDTO = BookDTO.builder().id(id).build();
-
-        bookDTO = bookService.getBookOne(bookDTO);
+        BookDTO bookDTO = bookService.getBookOne(id);
 
         model.addAttribute("book", bookDTO);
 
@@ -131,6 +129,40 @@ public class BookViewController {
                 .build();
 
         bookService.register(memberDTO, bookDTO, file);
+
+        return "books/list";
+    }
+
+    /**
+     * 책 데이터와 이미지, 회원의 이메일을 통해 책을 수정하는 서비스를 호출한다.
+     * @param bookDTO
+     *      책 데이터
+     * @param file
+     *      이미지 파일
+     * @param principal
+     *      로그인 회원 객체
+     * @return
+     *      책 조회 뷰
+     */
+    @PostMapping("/modify")
+    public String modifyProcess(BookDTO bookDTO, MultipartFile file, Principal principal) {
+        bookService.modify(bookDTO, principal.getName(), file);
+
+        return "/books/read/" + bookDTO.getId();
+    }
+
+    /**
+     * 책 ID와 로그인 회원의 이메일을 받아서 책을 삭제하는 서비스를 호출한다.
+     * @param id
+     *      책 ID
+     * @param principal
+     *      로그인 회원 객체
+     * @return
+     *      책 목록 뷰
+     */
+    @PostMapping("/delete")
+    public String deleteProcess(long id, Principal principal) {
+        bookService.delete(id, principal.getName());
 
         return "books/list";
     }

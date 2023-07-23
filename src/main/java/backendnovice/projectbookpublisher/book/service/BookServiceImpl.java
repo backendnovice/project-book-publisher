@@ -57,14 +57,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO getBookOne(BookDTO bookDTO) {
+    public BookDTO getBookOne(long id) {
         try {
-            BookEntity book = bookRepository.findById(bookDTO.getId())
+            BookEntity book = bookRepository.findById(id)
                     .orElseThrow(NoSuchElementException::new);
 
             return convertToDto(book);
         }catch (NoSuchElementException e) {
-            log.error("ID와 일치하는 이미지가 존재하지 않습니다 : {}", bookDTO.getId());
+            log.error("ID와 일치하는 이미지가 존재하지 않습니다 : {}", id);
 
             return null;
         }
@@ -105,6 +105,46 @@ public class BookServiceImpl implements BookService {
         }
 
         return pages;
+    }
+
+    @Override
+    @Transactional
+    public void modify(BookDTO bookDTO, String email, MultipartFile file) {
+        try {
+            BookEntity book = bookRepository.findById(bookDTO.getId())
+                    .orElseThrow(NoSuchElementException::new);
+
+            bookRepository.save(convertToEntity(bookDTO));
+
+            if(book.getMember().getEmail().equals(email)) {
+                imageService.updateImageFile(bookDTO.getId(), file);
+            }else {
+                throw new IllegalArgumentException();
+            }
+        }catch (NoSuchElementException e) {
+            log.error("해당 ID의 책이 존재하지 않습니다: {}", bookDTO.getId());
+        }catch (IllegalArgumentException e) {
+            log.error("해당 책의 수정 권한을 가지고 있지 않습니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete(long id, String email) {
+        try {
+            BookEntity book = bookRepository.findById(id)
+                    .orElseThrow(NoSuchElementException::new);
+
+            if(book.getMember().getEmail().equals(email)) {
+                bookRepository.deleteById(id);
+            }else {
+                throw new IllegalArgumentException();
+            }
+        }catch (NoSuchElementException e) {
+            log.error("해당 ID의 책이 존재하지 않습니다: {}", id);
+        }catch (IllegalArgumentException e) {
+            log.error("해당 책의 삭제 권한을 가지고 있지 않습니다.");
+        }
     }
 
     /**

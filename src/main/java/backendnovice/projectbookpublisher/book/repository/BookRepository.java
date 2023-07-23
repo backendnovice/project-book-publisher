@@ -55,4 +55,11 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
      *      Page 객체
      */
     Page<BookEntity> findAllByType(@Param("book_type")BookType bookType, Pageable pageable);
+
+    /**
+     * 책 ID와 일치하는 튜플을 삭제한다.
+     * @param id
+     *      책 ID
+     */
+    void deleteById(@Param("book_id")Long id);
 }

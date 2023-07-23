@@ -27,16 +27,15 @@ public interface BookService {
      *      BookDTO 객체
      * @param file
      *      이미지 파일
-     *
      */
     void register(MemberDTO memberDTO, BookDTO bookDTO, MultipartFile file);
 
     /**
-     * ID와 일치하는 책을 검색하고 BookDTO 로 반환한다.
-     * @param bookDTO
+     * ID와 일치하는 책을 검색하고 BookDTO로 반환한다.
+     * @param id
      *      BookDTO 객체
      */
-    BookDTO getBookOne(BookDTO bookDTO);
+    BookDTO getBookOne(long id);
 
     /**
      * 책을 조건없이 검색하고 Page 객체로 반환한다.
@@ -55,4 +54,24 @@ public interface BookService {
      *      Page 객체
      */
     Page<BookEntity> searchBooksByAttribute(BookDTO bookDTO, Pageable pageable);
+
+    /**
+     * 책 데이터와 이미지, 회원의 이메일을 통해 책을 수정하는 서비스
+     * @param bookDTO
+     *      책 데이터
+     * @param email
+     *      회원 이메일
+     * @param file 
+     *      새로운 이미지
+     */
+    void modify(BookDTO bookDTO, String email, MultipartFile file);
+
+    /**
+     * 책을 ID를 조건으로 삭제한다.
+     * @param id
+     *      책 ID
+     * @param email
+     *      회원 이메일
+     */
+    void delete(long id, String email);
 }
